@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Provider Dashboard - ServeEase</title>
+    <link rel="stylesheet" href="static/css/modern-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .dashboard {
+            background: var(--gray-50);
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+        .dashboard-header {
+            background: white;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 2rem;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .welcome-text h1 {
+            font-size: 2rem;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        .welcome-text p {
+            color: var(--gray-600);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+        }
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .icon-blue {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+        .icon-green {
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .icon-yellow {
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .icon-red {
+            background: rgba(239, 68, 68, 0.1);
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+        .section-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--gray-600);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: -2px;
+        }
+        .tab-btn:hover {
+            color: var(--primary-600);
+        }
+        .tab-btn.active {
+            color: var(--primary-600);
+            border-bottom-color: var(--primary-600);
+        }
+        .request-card {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--gray-50);
+            transition: all 0.3s;
+        }
+        .request-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        .request-info h3 {
+            font-size: 1.25rem;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        .request-category {
+            display: inline-block;
+            background: #eef2ff;
+            color: var(--primary-600);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .request-status {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .status-scheduled {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .status-in_progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .request-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: var(--radius);
+        }
+        .detail-item {
+            display: flex;
+            align-items: start;
+            gap: 0.5rem;
+        }
+        .detail-icon {
+            color: var(--primary-600);
+            margin-top: 2px;
+        }
+        .detail-content {
+            flex: 1;
+        }
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+        .detail-value {
+            color: var(--gray-900);
+            font-weight: 600;
+        }
+        .request-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .btn-action {
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        .btn-start {
+            background: var(--primary-600);
+            color: white;
+        }
+        .btn-start:hover {
+            background: var(--primary-700);
+        }
+        .btn-complete {
+            background: var(--success-500);
+            color: white;
+        }
+        .btn-complete:hover {
+            background: var(--success-600);
+        }
+        .btn-cancel {
+            background: white;
+            color: var(--error-500);
+            border: 1px solid var(--error-500);
+        }
+        .btn-cancel:hover {
+            background: var(--error-500);
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-600);
+        }
+        .empty-state svg {
+            margin-bottom: 1rem;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h3 {
+            font-size: 1.5rem;
+            color: var(--gray-900);
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            .request-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                    <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+                    <path d="M16 24L12 18H20L16 24Z" fill="white"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop stop-color="#667eea"/>
+                            <stop offset="1" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="brand-name">ServeEase</span>
+            </div>
+            <div class="nav-links">
+                <a href="provider-dashboard.html">Dashboard</a>
+                <a href="#" id="logoutBtn" class="nav-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="welcome-text">
+                        <h1>Provider Dashboard - <span id="userName"></span></h1>
+                        <p>Manage your service requests and track your performance</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <button class="btn-large btn-secondary" onclick="window.location.href='search-jobs.html'">
+                            🔍 Search Jobs
+                        </button>
+                        <button class="btn-large btn-primary" onclick="window.location.href='add-service.html'">
+                            + Add Service
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">Scheduled Requests</div>
+                            <div class="stat-value" id="scheduledRequests">0</div>
+                        </div>
+                        <div class="stat-icon icon-blue">📋</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">In Progress</div>
+                            <div class="stat-value" id="inProgressRequests">0</div>
+                        </div>
+                        <div class="stat-icon icon-yellow">⏳</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">Completed</div>
+                            <div class="stat-value" id="completedRequests">0</div>
+                        </div>
+                        <div class="stat-icon icon-green">✅</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">My Services</div>
+                            <div class="stat-value" id="totalServices">0</div>
+                        </div>
+                        <div class="stat-icon icon-red">🛠️</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Customer Requests -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Available Customer Requests</h2>
+                    <button class="btn-large btn-secondary" onclick="window.location.href='search-jobs.html'">
+                        🔍 View All Jobs
+                    </button>
+                </div>
+                <div id="customerRequestsList"></div>
+            </div>
+
+            <!-- My Services -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">My Services</h2>
+                    <button class="btn-large btn-primary" onclick="window.location.href='add-service.html'">
+                        + Add New Service
+                    </button>
+                </div>
+
+                <div id="myServicesList"></div>
+            </div>
+
+            <!-- Service Requests -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Service Requests</h2>
+                </div>
+
+                <div class="filter-tabs">
+                    <button class="tab-btn active" onclick="filterRequests('all')">All</button>
+                    <button class="tab-btn" onclick="filterRequests('scheduled')">Scheduled</button>
+                    <button class="tab-btn" onclick="filterRequests('in_progress')">In Progress</button>
+                    <button class="tab-btn" onclick="filterRequests('completed')">Completed</button>
+                    <button class="tab-btn" onclick="filterRequests('cancelled')">Cancelled</button>
+                </div>
+
+                <div id="requestsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Service Modal -->
+    <div class="modal" id="addServiceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Service</h3>
+                <button class="close-btn" onclick="closeAddServiceModal()">&times;</button>
+            </div>
+            <form id="addServiceForm">
+                <div class="form-group">
+                    <label class="form-label">Service Name</label>
+                    <input type="text" class="form-input" id="serviceName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="serviceDescription" rows="3" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="serviceCategory" required>
+                        <option value="Gardening">Gardening</option>
+                        <option value="Cleaning">Cleaning</option>
+                        <option value="Plumbing">Plumbing</option>
+                        <option value="AC Service">AC Service</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Painting">Painting</option>
+                        <option value="Pest Control">Pest Control</option>
+                        <option value="Car Care">Car Care</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Price (₹)</label>
+                    <input type="number" class="form-input" id="servicePrice" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Discount (%)</label>
+                    <input type="number" class="form-input" id="serviceDiscount" min="0" max="100" value="0">
+                </div>
+                <button type="submit" class="btn-large btn-primary" style="width: 100%;">Add Service</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="static/js/app.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        let allRequests = [];
+        let currentFilter = 'all';
+
+        if (!user || user.role !== 'provider') {
+            window.location.href = 'login.html';
+        }
+
+        document.getElementById('userName').textContent = user.name;
+
+        async function loadDashboard() {
+            try {
+                const [stats, requests, myServices, customerRequests] = await Promise.all([
+                    API.getDashboardStats(),
+                    API.getServiceRequests(),
+                    API.getMyServices(),
+                    API.getCustomerRequests()
+                ]);
+
+                allRequests = requests;
+
+                document.getElementById('scheduledRequests').textContent = stats.scheduled_requests || 0;
+                document.getElementById('inProgressRequests').textContent = stats.in_progress_requests || 0;
+                document.getElementById('completedRequests').textContent = stats.completed_requests || 0;
+                document.getElementById('totalServices').textContent = stats.total_services || 0;
+
+                displayRequests(allRequests);
+                displayMyServices(myServices);
+                displayCustomerRequests(customerRequests);
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showToast('Failed to load dashboard data', 'error');
+            }
+        }
+
+        function displayRequests(requests) {
+            const list = document.getElementById('requestsList');
+
+            if (requests.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" fill="#f3f4f6"/>
+                            <path d="M40 60h40M60 40v40" stroke="#9ca3af" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                        <h3 style="color: var(--gray-900); margin-bottom: 0.5rem;">No service requests</h3>
+                        <p>Service requests will appear here once customers subscribe to your services</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = requests.map(req => `
+                <div class="request-card">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <h3>${req.service_name}</h3>
+                            <span class="request-category">${req.category}</span>
+                        </div>
+                        <span class="request-status status-${req.status}">${req.status.replace('_', ' ').toUpperCase()}</span>
+                    </div>
+
+                    <div class="request-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">👤</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Customer</div>
+                                <div class="detail-value">${req.customer_name}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📞</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Contact</div>
+                                <div class="detail-value">${req.contact || 'N/A'}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📅</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Scheduled Date</div>
+                                <div class="detail-value">${new Date(req.scheduled_date).toLocaleDateString('en-IN')}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">⏰</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Time</div>
+                                <div class="detail-value">${req.preferred_time}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🔄</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Frequency</div>
+                                <div class="detail-value">${req.frequency.charAt(0).toUpperCase() + req.frequency.slice(1)}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📍</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Address</div>
+                                <div class="detail-value">${req.address || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="request-actions">
+                        ${req.status === 'scheduled' ? `
+                            <button class="btn-action btn-start" onclick="updateRequestStatus(${req.id}, 'in_progress')">
+                                ▶️ Start Service
+                            </button>
+                            <button class="btn-action btn-cancel" onclick="updateRequestStatus(${req.id}, 'cancelled')">
+                                ❌ Cancel
+                            </button>
+                        ` : ''}
+                        ${req.status === 'in_progress' ? `
+                            <button class="btn-action btn-complete" onclick="updateRequestStatus(${req.id}, 'completed')">
+                                ✅ Mark Complete
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayMyServices(services) {
+            const list = document.getElementById('myServicesList');
+
+            if (services.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" fill="#f3f4f6"/>
+                            <path d="M45 60L55 70L75 50" stroke="#9ca3af" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                        <h3 style="color: var(--gray-900); margin-bottom: 0.5rem;">No services added yet</h3>
+                        <p>Start by adding your first service to attract customers</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = services.map(service => {
+                const finalPrice = service.price * (1 - service.discount_percentage/100);
+                return `
+                    <div class="service-card-modern" style="margin-bottom: 1rem;">
+                        <div class="service-image" style="background-image: url('${service.image_url || 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400'}')">
+                            ${service.discount_percentage > 0 ? `<div class="service-badge">${service.discount_percentage}% OFF</div>` : ''}
+                        </div>
+                        <div class="service-content">
+                            <div class="service-category">${service.category}</div>
+                            <h3>${service.name}</h3>
+                            <p>${service.description}</p>
+                            <div class="service-footer">
+                                <div class="service-rating">
+                                    <span class="rating-star">★</span>
+                                    <span>${service.rating.toFixed(1)}</span>
+                                    <span class="rating-count">(${service.total_bookings})</span>
+                                </div>
+                                <div class="service-price">
+                                    ${service.discount_percentage > 0 ?
+                                        `<span class="price-original">₹${service.price}</span>
+                                         <span class="price-final">₹${Math.round(finalPrice)}</span>` :
+                                        `<span class="price-final">₹${service.price}</span>`
+                                    }
+                                </div>
+                            </div>
+                            <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                <button class="btn-action btn-start" onclick="editService(${service.id})">
+                                    ✏️ Edit
+                                </button>
+                                <button class="btn-action btn-cancel" onclick="deleteService(${service.id})">
+                                    🗑️ Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterRequests(status) {
+            currentFilter = status;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (status === 'all') {
+                displayRequests(allRequests);
+            } else {
+                displayRequests(allRequests.filter(req => req.status === status));
+            }
+        }
+
+        async function updateRequestStatus(reqId, status) {
+            try {
+                await API.updateServiceRequest(reqId, status);
+                showToast(`Request marked as ${status.replace('_', ' ')}`, 'success');
+                loadDashboard();
+            } catch (error) {
+                console.error('Error updating request:', error);
+                showToast('Failed to update request', 'error');
+            }
+        }
+
+        function showAddServiceModal() {
+            document.getElementById('addServiceModal').classList.add('show');
+        }
+
+        function closeAddServiceModal() {
+            document.getElementById('addServiceModal').classList.remove('show');
+        }
+
+        document.getElementById('addServiceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const serviceData = {
+                name: document.getElementById('serviceName').value,
+                description: document.getElementById('serviceDescription').value,
+                category: document.getElementById('serviceCategory').value,
+                price: parseFloat(document.getElementById('servicePrice').value),
+                discount_percentage: parseFloat(document.getElementById('serviceDiscount').value),
+                frequency_options: 'daily,weekly,monthly,quarterly,half-yearly',
+                image_url: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400'
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/api/services', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(serviceData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Service added successfully');
+                    closeAddServiceModal();
+                    document.getElementById('addServiceForm').reset();
+                    loadDashboard();
+                } else {
+                    console.error('Failed to add service:', data);
+                    alert(`Failed to add service: ${data.error || 'Unknown error'}`);
+                }
+            } catch (error) {
+                console.error('Error adding service:', error);
+                alert('Error adding service. Please check if the backend is running and you are logged in.');
+            }
+        });
+
+        function displayCustomerRequests(requests) {
+            const list = document.getElementById('customerRequestsList');
+
+            if (requests.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" fill="#f3f4f6"/>
+                            <path d="M50 50L70 50M60 40v20" stroke="#9ca3af" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                        <h3 style="color: var(--gray-900); margin-bottom: 0.5rem;">No available customer requests</h3>
+                        <p>Customer requests will appear here when they submit service requests</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Limit to first 5 requests for dashboard view
+            const displayRequests = requests.slice(0, 5);
+
+            list.innerHTML = displayRequests.map(req => `
+                <div class="request-card">
+                    <div class="request-header">
+                        <div class="request-info">
+                            <h3>${req.service_category}</h3>
+                            <span class="request-category">${req.status.toUpperCase()}</span>
+                        </div>
+                        <span class="request-status status-scheduled">AVAILABLE</span>
+                    </div>
+
+                    <div class="request-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">📝</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Description</div>
+                                <div class="detail-value">${req.service_description || 'N/A'}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📍</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Location</div>
+                                <div class="detail-value">${req.location}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📅</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Scheduled Date</div>
+                                <div class="detail-value">${new Date(req.scheduled_date).toLocaleDateString('en-IN')}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">⏰</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Time</div>
+                                <div class="detail-value">${req.scheduled_time}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="request-actions">
+                        <button class="btn-action btn-start" onclick="acceptCustomerRequest(${req.id})">
+                            ✅ Accept Request
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add "View More" if there are more than 5 requests
+            if (requests.length > 5) {
+                list.innerHTML += `
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <button class="btn-large btn-secondary" onclick="window.location.href='search-jobs.html'">
+                            View All ${requests.length} Available Requests
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        async function acceptCustomerRequest(requestId) {
+            if (!confirm('Are you sure you want to accept this customer request?')) return;
+
+            try {
+                await API.acceptJob(requestId);
+                showToast('Customer request accepted successfully!', 'success');
+                loadDashboard(); // Refresh the dashboard
+            } catch (error) {
+                console.error('Error accepting customer request:', error);
+                showToast(error.message || 'Failed to accept request', 'error');
+            }
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('http://localhost:5000/api/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        });
+
+        loadDashboard();
+    </script>
+</body>
+</html>

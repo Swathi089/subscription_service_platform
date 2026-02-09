@@ -1,0 +1,410 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Service - ServeEase</title>
+    <link rel="stylesheet" href="static/css/modern-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .add-service-page {
+            min-height: 100vh;
+            background: var(--gray-50);
+            padding-top: 70px;
+        }
+        .add-service-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        .page-header p {
+            color: var(--gray-600);
+        }
+        .form-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group-full {
+            grid-column: 1 / -1;
+        }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-900);
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-600);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .checkbox-group input {
+            width: auto;
+        }
+        .frequency-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+        .frequency-option {
+            padding: 0.75rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        .frequency-option:hover {
+            border-color: var(--primary-600);
+            background: var(--gray-50);
+        }
+        .frequency-option.selected {
+            background: var(--primary-600);
+            color: white;
+            border-color: var(--primary-600);
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+        .alert-error {
+            background: #fee;
+            color: var(--error-600);
+            border: 1px solid var(--error-500);
+        }
+        .alert-success {
+            background: #d1fae5;
+            color: var(--success-600);
+            border: 1px solid var(--success-500);
+        }
+        .alert:not(:empty) {
+            display: block;
+        }
+        .alert:empty {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                    <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+                    <path d="M16 24L12 18H20L16 24Z" fill="white"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop stop-color="#667eea"/>
+                            <stop offset="1" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="brand-name">ServeEase</span>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/services">Services</a>
+                <a href="/provider-dashboard">Dashboard</a>
+                <a href="#" id="logoutBtn" class="nav-btn">Logout</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="add-service-page">
+        <div class="add-service-container">
+            <div class="page-header">
+                <h1>Add New Service</h1>
+                <p>Create a new service offering for your customers</p>
+            </div>
+
+            <div class="form-card">
+                <div id="errorAlert" class="alert alert-error"></div>
+                <div id="successAlert" class="alert alert-success"></div>
+
+                <form id="addServiceForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Service Name *</label>
+                            <input type="text" class="form-input" id="serviceName" required placeholder="e.g., Deep Home Cleaning">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Category *</label>
+                            <select class="form-select" id="serviceCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Gardening">Gardening</option>
+                                <option value="Cleaning">Cleaning</option>
+                                <option value="Plumbing">Plumbing</option>
+                                <option value="AC Service">AC Service</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="Painting">Painting</option>
+                                <option value="Pest Control">Pest Control</option>
+                                <option value="Car Care">Car Care</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Price (₹) *</label>
+                            <input type="number" class="form-input" id="servicePrice" min="0" step="0.01" required placeholder="500">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Discount (%)</label>
+                            <input type="number" class="form-input" id="serviceDiscount" min="0" max="100" value="0" placeholder="10">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Duration (minutes) *</label>
+                            <input type="number" class="form-input" id="serviceDuration" min="15" step="15" required placeholder="120">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Image URL</label>
+                            <input type="url" class="form-input" id="serviceImage" placeholder="https://example.com/image.jpg">
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label class="form-label">Description *</label>
+                        <textarea class="form-textarea" id="serviceDescription" required placeholder="Describe your service in detail..."></textarea>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label class="form-label">Available Frequencies *</label>
+                        <div class="frequency-options" id="frequencyOptions">
+                            <div class="frequency-option" onclick="toggleFrequency('daily')">Daily</div>
+                            <div class="frequency-option" onclick="toggleFrequency('weekly')">Weekly</div>
+                            <div class="frequency-option selected" onclick="toggleFrequency('monthly')">Monthly</div>
+                            <div class="frequency-option" onclick="toggleFrequency('quarterly')">Quarterly</div>
+                            <div class="frequency-option" onclick="toggleFrequency('half-yearly')">Half-Yearly</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="isActive" checked>
+                            <label for="isActive">Make this service active and visible to customers</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="submitBtn">Create Service</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        let selectedFrequencies = ['monthly'];
+
+        // Check if user is logged in and is a provider
+        if (!user || user.role !== 'provider') {
+            window.location.href = '/login';
+        }
+
+        // Verify session is still valid
+        async function verifySession() {
+            try {
+                const response = await fetch('http://localhost:5000/api/dashboard/stats', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+
+                if (response.status === 401) {
+                    alert('Session expired. Please login again.');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                    return false;
+                }
+
+                return response.ok;
+            } catch (error) {
+                console.error('Session verification failed:', error);
+                alert('Unable to verify session. Please login again.');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+                return false;
+            }
+        }
+
+        // Verify session on page load
+        verifySession();
+
+        function toggleFrequency(frequency) {
+            const option = event.target;
+            option.classList.toggle('selected');
+
+            if (option.classList.contains('selected')) {
+                if (!selectedFrequencies.includes(frequency)) {
+                    selectedFrequencies.push(frequency);
+                }
+            } else {
+                selectedFrequencies = selectedFrequencies.filter(f => f !== frequency);
+            }
+
+            // Ensure at least one frequency is selected
+            if (selectedFrequencies.length === 0) {
+                option.classList.add('selected');
+                selectedFrequencies.push(frequency);
+            }
+        }
+
+        document.getElementById('addServiceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const errorAlert = document.getElementById('errorAlert');
+            const successAlert = document.getElementById('successAlert');
+            const submitBtn = document.getElementById('submitBtn');
+
+            errorAlert.textContent = '';
+            successAlert.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Service...';
+
+            const serviceData = {
+                name: document.getElementById('serviceName').value.trim(),
+                description: document.getElementById('serviceDescription').value.trim(),
+                category: document.getElementById('serviceCategory').value,
+                price: parseFloat(document.getElementById('servicePrice').value),
+                discount_percentage: parseFloat(document.getElementById('serviceDiscount').value) || 0,
+                duration_minutes: parseInt(document.getElementById('serviceDuration').value),
+                frequency_options: selectedFrequencies.join(','),
+                image_url: document.getElementById('serviceImage').value.trim() || 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400',
+                is_active: document.getElementById('isActive').checked
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/api/services', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(serviceData)
+                });
+
+                if (response.status === 401) {
+                    alert('Session expired. Please login again.');
+                    window.location.href = '/login';
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    successAlert.textContent = 'Service created successfully! Redirecting to dashboard...';
+                    setTimeout(() => {
+                        window.location.href = '/provider-dashboard';
+                    }, 2000);
+                }
+                    console.error('Failed to create service:', data);
+                    errorAlert.textContent = data.error || 'Failed to create service. Please try again.';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Create Service';
+                }
+            } catch (error) {
+                console.error('Error creating service:', error);
+                errorAlert.textContent = 'Network error. Please check your connection and try again.';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Service';
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('http://localhost:5000/api/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        });
+
+        function toggleMobileMenu() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        }
+    </script>
+    <script src="static/js/app.js"></script>
+</body>
+</html>

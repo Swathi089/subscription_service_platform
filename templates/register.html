@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - ServeEase</title>
+    <link rel="stylesheet" href="static/css/modern-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+        }
+        .auth-container {
+            max-width: 550px;
+            width: 100%;
+            margin: auto;
+            background: white;
+            border-radius: 1.5rem;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray-900);
+        }
+        .auth-header p {
+            color: var(--gray-600);
+        }
+        .role-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .role-option {
+            padding: 1.5rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .role-option:hover {
+            border-color: var(--primary-600);
+            background: var(--gray-50);
+        }
+        .role-option.active {
+            border-color: var(--primary-600);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+        .role-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .role-title {
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        .role-desc {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-600);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .auth-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--gray-600);
+        }
+        .auth-footer a {
+            color: var(--primary-600);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .alert-error {
+            background: #fee;
+            color: var(--error-600);
+            border: 1px solid var(--error-500);
+        }
+        .alert-success {
+            background: #d5f4e6;
+            color: var(--success-600);
+            border: 1px solid var(--success-500);
+        }
+        .alert:not(:empty) {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1>Create Account</h1>
+                <p>Join ServiceHub and get started today</p>
+            </div>
+
+            <div class="role-selector">
+                <div class="role-option active" onclick="selectRole('customer')">
+                    <div class="role-icon">👤</div>
+                    <div class="role-title">Customer</div>
+                    <div class="role-desc">Book services</div>
+                </div>
+                <div class="role-option" onclick="selectRole('provider')">
+                    <div class="role-icon">🔧</div>
+                    <div class="role-title">Provider</div>
+                    <div class="role-desc">Offer services</div>
+                </div>
+            </div>
+
+            <form id="registerForm">
+                <input type="hidden" id="role" value="customer">
+                
+                <div id="errorAlert" class="alert alert-error"></div>
+                <div id="successAlert" class="alert alert-success"></div>
+
+                <div class="form-group">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" class="form-input" id="name" required placeholder="John Doe">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" class="form-input" id="email" required placeholder="you@example.com">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" class="form-input" id="contact" required placeholder="+91 98765 43210">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">City *</label>
+                        <input type="text" class="form-input" id="city" required placeholder="Chennai">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-input" id="address" placeholder="Street address">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">State</label>
+                        <input type="text" class="form-input" id="state" placeholder="Tamil Nadu">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Pincode</label>
+                        <input type="text" class="form-input" id="pincode" placeholder="600001">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <input type="password" class="form-input" id="password" required placeholder="••••••••" minlength="6">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm Password *</label>
+                    <input type="password" class="form-input" id="confirmPassword" required placeholder="••••••••" minlength="6">
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">Create Account</button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account? <a href="/login">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectRole(role) {
+            document.querySelectorAll('.role-option').forEach(opt => opt.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById('role').value = role;
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const errorAlert = document.getElementById('errorAlert');
+            const successAlert = document.getElementById('successAlert');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            errorAlert.textContent = '';
+            successAlert.textContent = '';
+
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                errorAlert.textContent = 'Passwords do not match';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Account...';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('name').value,
+                        email: document.getElementById('email').value,
+                        contact: document.getElementById('contact').value,
+                        address: document.getElementById('address').value,
+                        city: document.getElementById('city').value,
+                        state: document.getElementById('state').value,
+                        pincode: document.getElementById('pincode').value,
+                        password: password,
+                        role: document.getElementById('role').value
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Account created successfully! Proceed with login.');
+                    window.location.href = '/login';
+                } else {
+                    errorAlert.textContent = data.error || 'Registration failed';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Create Account';
+                }
+            } catch (error) {
+                errorAlert.textContent = 'Connection error. Please try again.';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
+            }
+        });
+    </script>
+    <script src="static/js/app.js"></script>
+</body>
+</html>

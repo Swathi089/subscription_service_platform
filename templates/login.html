@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ServeEase</title>
+    <link rel="stylesheet" href="static/css/modern-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .auth-page {
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+        }
+        .auth-container {
+            max-width: 450px;
+            width: 100%;
+            margin: auto;
+            background: white;
+            border-radius: 1.5rem;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .auth-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .logo-icon {
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--gray-900);
+        }
+        .auth-header p {
+            color: var(--gray-600);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-600);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .checkbox-group input {
+            width: auto;
+        }
+        .forgot-link {
+            color: var(--primary-600);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .divider {
+            text-align: center;
+            margin: 2rem 0;
+            color: var(--gray-500);
+            position: relative;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background: var(--gray-300);
+        }
+        .divider::before {
+            left: 0;
+        }
+        .divider::after {
+            right: 0;
+        }
+        .auth-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--gray-600);
+        }
+        .auth-footer a {
+            color: var(--primary-600);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .alert-error {
+            background: #fee;
+            color: var(--error-600);
+            border: 1px solid var(--error-500);
+        }
+        .alert:not(:empty) {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-logo">
+                <div class="logo-icon">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <rect width="48" height="48" rx="12" fill="url(#gradient)"/>
+                        <path d="M24 12L30 21H18L24 12Z" fill="white"/>
+                        <path d="M24 36L18 27H30L24 36Z" fill="white"/>
+                        <defs>
+                            <linearGradient id="gradient" x1="0" y1="0" x2="48" y2="48">
+                                <stop stop-color="#667eea"/>
+                                <stop offset="1" stop-color="#764ba2"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="auth-header">
+                <h1>Welcome Back</h1>
+                <p>Login to your ServeEase account</p>
+            </div>
+
+            <form id="loginForm">
+                <div id="errorAlert" class="alert alert-error"></div>
+                
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" id="email" required placeholder="you@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="password" required placeholder="••••••••">
+                </div>
+
+                <div class="form-options">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember">
+                        <label for="remember" style="font-size: 0.875rem; color: var(--gray-600);">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn-submit" id="submitBtn">Sign In</button>
+            </form>
+
+            <div class="divider">OR</div>
+
+            <div class="auth-footer">
+                Don't have an account? <a href="/register">Sign up for free</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/js/app.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const errorAlert = document.getElementById('errorAlert');
+            const submitBtn = document.getElementById('submitBtn');
+
+            errorAlert.textContent = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing in...';
+
+            try {
+                const data = await API.login(
+                    document.getElementById('email').value,
+                    document.getElementById('password').value
+                );
+
+                localStorage.setItem('user', JSON.stringify(data.user));
+                if (data.user.role === 'customer') {
+                    window.location.href = '/customer-dashboard';
+                } else {
+                    window.location.href = '/provider-dashboard';
+                }
+            } catch (error) {
+                errorAlert.textContent = error.message || 'Login failed';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Sign In';
+            }
+        });
+    </script>
+</body>
+</html>

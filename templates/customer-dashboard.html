@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - ServeEase</title>
+    <link rel="stylesheet" href="static/css/modern-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard {
+            background: #f8fafc;
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+        .dashboard-header {
+            background: #ffffff;
+            padding: 4rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .header-content {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .dashboard-nav {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .nav-btn {
+            padding: 0.25rem 0.75rem;
+            background: var(--primary-600);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        .nav-btn:hover {
+            background: var(--primary-700);
+        }
+        .nav-section-buttons {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+            margin-left: 1rem;
+        }
+        .welcome-text h1 {
+            font-size: 2rem;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .welcome-text h1 {
+                font-size: 1.5rem;
+            }
+        }
+        .welcome-text p {
+            color: var(--gray-600);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+        }
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .icon-primary {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+        .icon-success {
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .icon-warning {
+            background: rgba(245, 158, 11, 0.1);
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+        .dashboard-content {
+            padding-bottom: 4rem;
+        }
+        .section-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        .subscription-card {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--gray-50);
+            transition: all 0.3s;
+        }
+        .subscription-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        .sub-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        .sub-info h3 {
+            font-size: 1.25rem;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        .sub-category {
+            display: inline-block;
+            background: #eef2ff;
+            color: var(--primary-600);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .sub-status {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status-paused {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .sub-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
+        .detail-icon {
+            color: var(--primary-600);
+        }
+        .sub-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        .btn-pause {
+            background: var(--warning-500);
+            color: white;
+        }
+        .btn-pause:hover {
+            background: var(--warning-600);
+        }
+        .btn-resume {
+            background: var(--success-500);
+            color: white;
+        }
+        .btn-resume:hover {
+            background: var(--success-600);
+        }
+        .btn-cancel {
+            background: white;
+            color: var(--error-500);
+            border: 1px solid var(--error-500);
+        }
+        .btn-cancel:hover {
+            background: var(--error-500);
+            color: white;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-600);
+        }
+        .empty-state svg {
+            margin-bottom: 1rem;
+        }
+        .loading-spinner {
+            text-align: center;
+            padding: 3rem;
+        }
+        .spinner {
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--primary-600);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .service-request-card {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--gray-50);
+            transition: all 0.3s;
+        }
+        .service-request-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        .notification-card {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: white;
+            transition: all 0.3s;
+        }
+        .notification-card.unread {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary-600);
+        }
+        .notification-card:hover {
+            box-shadow: var(--shadow-sm);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h3 {
+            font-size: 1.5rem;
+            color: var(--gray-900);
+        }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            transition: border-color 0.3s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-600);
+        }
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        /* Dashboard Layout */
+        .dashboard-layout {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+        .dashboard-sidebar {
+            width: 200px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 3rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+            position: sticky;
+            top: 90px;
+            height: fit-content;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .sidebar-brand {
+            display: none;
+        }
+        .sidebar-brand-name {
+            font-size: var(--font-size-xl);
+            font-weight: 800;
+            color: var(--gray-900);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+        .sidebar-features {
+            display: flex;
+            flex-direction: column;
+            gap: 0rem;
+            margin-top: -3rem;
+        }
+        .feature-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius);
+            color: var(--gray-700);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            width: 100%;
+        }
+        .feature-link:hover {
+            background: var(--gray-50);
+            color: var(--primary-600);
+        }
+        .feature-link svg {
+            flex-shrink: 0;
+        }
+        .notification-badge {
+            background: var(--error-500);
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 600;
+            padding: 0.125rem 0.375rem;
+            border-radius: 0.75rem;
+            min-width: 1rem;
+            height: 1rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+        }
+        .dashboard-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-layout {
+                gap: 1.5rem;
+            }
+            .dashboard-sidebar {
+                width: 0px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-layout {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .dashboard-sidebar {
+                width: 0px;
+                position: static;
+                order: -1;
+            }
+            .sidebar-brand {
+                justify-content: center;
+                margin-bottom: 1.5rem;
+            }
+            .sidebar-features {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            .sub-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                    <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+                    <path d="M16 24L12 18H20L16 24Z" fill="white"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop stop-color="#667eea"/>
+                            <stop offset="1" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="brand-name">ServiceHub</span>
+            </div>
+            <div class="nav-links">
+
+             
+                <div class="profile-icon" id="profileIcon" onclick="showProfileEditModal()">
+                    👤
+                </div>
+                <a href="#" id="logoutBtn" class="nav-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <div class="dashboard-sidebar">
+            <div class="sidebar-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                    <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+                    <path d="M16 24L12 18H20L16 24Z" fill="white"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop stop-color="#667eea"/>
+                            <stop offset="1" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="sidebar-brand-name">ServiceHub</span>
+            </div>
+
+            <div class="sidebar-features">
+                <button class="feature-link" onclick="window.location.href='/services'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    Browse Services
+                </button>
+                <button class="feature-link" onclick="showServiceRequestModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
+                        <polyline points="14,2 14,8 20,8"/>
+                    </svg>
+                    New Service Request
+                </button>
+                <button class="feature-link" onclick="scrollToSection('subscriptionsSection')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    My Subscriptions
+                </button>
+                <button class="feature-link" onclick="scrollToSection('upcomingSchedulesSection')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Upcoming Service Payments
+                </button>
+                <button class="feature-link" onclick="scrollToSection('notificationsSection')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    Notifications <span id="notificationBadge" class="notification-badge" style="display: none;"></span>
+                </button>
+                <button class="feature-link" onclick="scrollToSection('paymentHistorySection')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                    Payment History
+                </button>
+                <button class="feature-link" onclick="scrollToSection('serviceRequestsSection')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    My Service Requests
+                </button>
+                <button class="feature-link" onclick="scrollToSection('upcomingSchedulesSection')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                    Upcoming Schedules
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <div class="dashboard-header">
+                <div class="container">
+                    <div class="header-content">
+                        <div class="welcome-text">
+                            <h1>Welcome back, <span id="userName"></span>! 👋</h1>
+                            <p>Manage your subscriptions and upcoming services</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="section-card" style="padding: 1rem;">
+                <div class="stats-grid" style="margin-bottom: 0;">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon icon-primary">📊</div>
+                            <div>
+                                <div class="stat-value" id="activeSubs">0</div>
+                                <div class="stat-label">Active Subscriptions</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon icon-success">📅</div>
+                            <div>
+                                <div class="stat-value" id="nextServiceDate">None</div>
+                                <div class="stat-label">Next Service Date</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon icon-warning">📈</div>
+                            <div>
+                                <div class="stat-value" id="totalSubs">0</div>
+                                <div class="stat-label">Total Subscriptions</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon icon-primary">💰</div>
+                            <div>
+                                <div class="stat-value" id="totalSpent">₹0</div>
+                                <div class="stat-label">Total Spent</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Service Request Form -->
+            <div class="section-card" id="requestServiceSection">
+                <div class="section-header">
+                    <h2 class="section-title">Request a Service</h2>
+                    <button class="btn-large btn-primary" onclick="showServiceRequestModal()">+ New Service Request</button>
+                </div>
+                <p style="color: var(--gray-600); margin-bottom: 1rem;">Need a specific service? Tell us what you need and we'll match you with the right provider.</p>
+            </div>
+
+            <!-- My Service Requests -->
+            <div class="section-card" id="serviceRequestsSection">
+                <div class="section-header">
+                    <h2 class="section-title">My Service Requests</h2>
+                </div>
+                <div id="serviceRequestsList">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading your service requests...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="section-card" id="notificationsSection">
+                <div class="section-header">
+                    <h2 class="section-title">Notifications</h2>
+                </div>
+                <div id="notificationsList">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading notifications...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Subscriptions -->
+            <div class="section-card" id="subscriptionsSection">
+                <div class="section-header">
+                    <h2 class="section-title">My Subscriptions</h2>
+                </div>
+                <div id="subscriptionsList">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading your subscriptions...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Schedules -->
+            <div class="section-card" id="upcomingSchedulesSection">
+                <div class="section-header">
+                    <h2 class="section-title">Upcoming Schedules</h2>
+                </div>
+                <div id="upcomingSchedulesList">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading your upcoming schedules...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment History -->
+            <div class="section-card" id="paymentHistorySection">
+                <div class="section-header">
+                    <h2 class="section-title">Payment History</h2>
+                </div>
+                <div id="paymentHistoryList">
+                    <div class="loading-spinner">
+                        <div class="spinner"></div>
+                        <p>Loading your payment history...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Service Request Modal -->
+    <div class="modal" id="serviceRequestModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Request a Service</h3>
+                <button class="close-btn" onclick="closeServiceRequestModal()">&times;</button>
+            </div>
+            <form id="serviceRequestForm">
+                <div class="form-group">
+                    <label class="form-label">Service Category</label>
+                    <select class="form-select" id="serviceCategory" required>
+                        <option value="">Select a category</option>
+                        <option value="Cleaning">Cleaning</option>
+                        <option value="Gardening">Gardening</option>
+                        <option value="Plumbing">Plumbing</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="AC Service">AC Service</option>
+                        <option value="Painting">Painting</option>
+                        <option value="Pest Control">Pest Control</option>
+                        <option value="Car Care">Car Care</option>
+                        <option value="Home Repair">Home Repair</option>
+                        <option value="Appliance Repair">Appliance Repair</option>
+                        <option value="Security">Security</option>
+                        <option value="IT Services">IT Services</option>
+                        <option value="Moving">Moving</option>
+                        <option value="Beauty">Beauty</option>
+                        <option value="Fitness">Fitness</option>
+                        <option value="Tutoring">Tutoring</option>
+                        <option value="Pet Care">Pet Care</option>
+                        <option value="Event Planning">Event Planning</option>
+                        <option value="Photography">Photography</option>
+                        <option value="Legal Services">Legal Services</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Service Description</label>
+                    <textarea class="form-textarea" id="serviceDescription" placeholder="Describe the service you need..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" class="form-input" id="serviceLocation" placeholder="Enter your location" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Preferred Date</label>
+                    <input type="date" class="form-input" id="serviceDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Preferred Time</label>
+                    <select class="form-select" id="serviceTime" required>
+                        <option value="">Select time</option>
+                        <option value="morning">Morning (9 AM - 12 PM)</option>
+                        <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
+                        <option value="evening">Evening (5 PM - 8 PM)</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-large btn-primary" style="width: 100%;">Submit Service Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Edit Modal -->
+    <div class="modal" id="profileEditModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Profile</h3>
+                <button class="close-btn" onclick="closeProfileEditModal()">&times;</button>
+            </div>
+            <form id="profileEditForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" id="profileName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" id="profileEmail" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" class="form-input" id="profilePhone" placeholder="Enter your phone number">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Address</label>
+                    <textarea class="form-textarea" id="profileAddress" placeholder="Enter your address" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn-large btn-primary" style="width: 100%;">Update Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="static/js/app.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Temporarily disabled authentication check for testing
+        // if (!user || user.role !== 'customer') {
+        //     window.location.href = 'login.html';
+        // }
+
+
+
+        document.getElementById('userName').textContent = user.name;
+
+        async function loadDashboard() {
+            try {
+                const [stats, subscriptions] = await Promise.all([
+                    API.getDashboardStats(),
+                    API.getSubscriptions()
+                ]);
+
+                // Update stats
+                document.getElementById('activeSubs').textContent = stats.active_subscriptions || 0;
+                document.getElementById('nextServiceDate').textContent = stats.next_upcoming_date ? new Date(stats.next_upcoming_date).toLocaleDateString('en-IN') : 'None';
+                document.getElementById('totalSubs').textContent = stats.total_subscriptions || 0;
+                document.getElementById('totalSpent').textContent = `₹${stats.total_spent || 0}`;
+
+                // Update chart
+                updateChart(stats);
+
+                // Display subscriptions
+                displaySubscriptions(subscriptions);
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showToast('Failed to load dashboard data', 'error');
+                document.getElementById('subscriptionsList').innerHTML = `
+                    <div class="empty-state">
+                        <h3 style="color: var(--error-600); margin-bottom: 0.5rem;">Error Loading Data</h3>
+                        <p style="margin-bottom: 1.5rem;">Unable to load your subscriptions. Please try again.</p>
+                        <button onclick="loadDashboard()" class="btn-large btn-primary">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function displaySubscriptions(subscriptions) {
+            const list = document.getElementById('subscriptionsList');
+            
+            if (subscriptions.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" fill="#f3f4f6"/>
+                            <path d="M40 60h40M60 40v40" stroke="#9ca3af" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                        <h3 style="color: var(--gray-900); margin-bottom: 0.5rem;">No subscriptions yet</h3>
+                        <p style="margin-bottom: 1.5rem;">Start by browsing our services</p>
+                        <a href="/services" class="btn-large btn-primary">Browse Services</a>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = subscriptions.map(sub => `
+                <div class="subscription-card">
+                    <div class="sub-header">
+                        <div class="sub-info">
+                            <h3>${sub.service_name}</h3>
+                            <span class="sub-category">${sub.category}</span>
+                        </div>
+                        <span class="sub-status status-${sub.status}">${sub.status.toUpperCase()}</span>
+                    </div>
+                    
+                    <div class="sub-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23,4 23,10 17,10"/>
+                                    <polyline points="1,20 1,14 7,14"/>
+                                    <path d="M20.49,9A9,9,0,1,1,5.64,5.64L23,10"/>
+                                </svg>
+                            </span>
+                            <span>${sub.frequency.charAt(0).toUpperCase() + sub.frequency.slice(1)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                            </span>
+                            <span>Started: ${new Date(sub.start_date).toLocaleDateString('en-IN')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12,6 12,12 16,14"/>
+                                </svg>
+                            </span>
+                            <span>${sub.preferred_time.charAt(0).toUpperCase() + sub.preferred_time.slice(1)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23"/>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                </svg>
+                            </span>
+                            <span>₹${Math.round(sub.total_amount)}</span>
+                        </div>
+                        ${sub.next_service_date ? `
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                    <line x1="3" y1="14" x2="8" y2="14"/>
+                                </svg>
+                            </span>
+                            <span>Next: ${new Date(sub.next_service_date).toLocaleDateString('en-IN')}</span>
+                        </div>
+                        ` : ''}
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                ${sub.payment_status === 'paid' ?
+                                    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>' :
+                                    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>'
+                                }
+                            </span>
+                            <span>Payment: ${sub.payment_status === 'paid' ? 'Completed' : 'Pending'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sub-actions">
+                        ${sub.status === 'active' ? `
+                            <button class="btn-action btn-pause" onclick="updateSubscription(${sub.id}, 'paused')">
+                                ⏸️ Pause
+                            </button>
+                            <button class="btn-action btn-cancel" onclick="cancelSubscription(${sub.id})">
+                                ❌ Cancel
+                            </button>
+                        ` : ''}
+                        ${sub.status === 'paused' ? `
+                            <button class="btn-action btn-resume" onclick="updateSubscription(${sub.id}, 'active')">
+                                ▶️ Resume
+                            </button>
+                            <button class="btn-action btn-cancel" onclick="cancelSubscription(${sub.id})">
+                                ❌ Cancel
+                            </button>
+                        ` : ''}
+                        ${sub.status === 'cancelled' ? `
+                            <span style="color: var(--gray-600); font-size: 0.875rem;">This subscription has been cancelled</span>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function updateSubscription(subId, status) {
+            const action = status === 'active' ? 'resume' : 'pause';
+            if (!confirm(`Are you sure you want to ${action} this subscription?`)) return;
+
+            try {
+                await API.updateSubscription(subId, { status });
+                showToast(`Subscription ${action}d successfully`, 'success');
+                loadDashboard();
+            } catch (error) {
+                console.error('Error updating subscription:', error);
+                showToast(error.message || 'Failed to update subscription', 'error');
+            }
+        }
+
+        async function cancelSubscription(subId) {
+            if (!confirm('Are you sure you want to cancel this subscription? This action cannot be undone.')) return;
+
+            try {
+                await API.cancelSubscription(subId);
+                showToast('Subscription cancelled successfully', 'success');
+                loadDashboard();
+            } catch (error) {
+                console.error('Error cancelling subscription:', error);
+                showToast(error.message || 'Failed to cancel subscription', 'error');
+            }
+        }
+
+        async function logout() {
+            try {
+                await API.logout();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await logout();
+        });
+
+        // Service Request Functions
+        function showServiceRequestModal() {
+            document.getElementById('serviceRequestModal').classList.add('show');
+        }
+
+        function closeServiceRequestModal() {
+            document.getElementById('serviceRequestModal').classList.remove('show');
+        }
+
+        async function submitServiceRequest(event) {
+            event.preventDefault();
+
+            const formData = {
+                service_category: document.getElementById('serviceCategory').value,
+                service_description: document.getElementById('serviceDescription').value,
+                location: document.getElementById('serviceLocation').value,
+                scheduled_date: document.getElementById('serviceDate').value,
+                scheduled_time: document.getElementById('serviceTime').value
+            };
+
+            try {
+                await API.createServiceRequest(formData);
+                showToast('Service request submitted successfully! We will match you with a provider soon.', 'success');
+                closeServiceRequestModal();
+                document.getElementById('serviceRequestForm').reset();
+                loadServiceRequests();
+            } catch (error) {
+                console.error('Error submitting service request:', error);
+                showToast(error.message || 'Failed to submit service request', 'error');
+            }
+        }
+
+        async function loadServiceRequests() {
+            try {
+                const requests = await API.getCustomerServiceRequests();
+                displayServiceRequests(requests);
+            } catch (error) {
+                console.error('Error loading service requests:', error);
+                showToast('Failed to load service requests', 'error');
+                document.getElementById('serviceRequestsList').innerHTML = `
+                    <div class="empty-state">
+                        <h3 style="color: var(--error-600); margin-bottom: 0.5rem;">Error Loading Requests</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayServiceRequests(requests) {
+            const list = document.getElementById('serviceRequestsList');
+            const section = document.getElementById('serviceRequestsSection');
+
+            if (requests.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            list.innerHTML = requests.map(req => `
+                <div class="service-request-card">
+                    <div class="sub-header">
+                        <div class="sub-info">
+                            <h3>${req.service_category}</h3>
+                            <span class="sub-category">${req.status.toUpperCase()}</span>
+                        </div>
+                        <span class="sub-status status-${req.status === 'accepted' ? 'active' : req.status === 'scheduled' ? 'paused' : 'cancelled'}">
+                            ${req.status.toUpperCase()}
+                        </span>
+                    </div>
+
+                    <div class="sub-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </span>
+                            <span>${req.service_description}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                            </span>
+                            <span>${req.location}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                            </span>
+                            <span>${new Date(req.scheduled_date).toLocaleDateString('en-IN')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12,6 12,12 16,14"/>
+                                </svg>
+                            </span>
+                            <span>${req.scheduled_time}</span>
+                        </div>
+                        ${req.provider_name ? `
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </span>
+                            <span>Provider: ${req.provider_name} (${req.provider_contact || 'N/A'})</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Notifications Functions
+        async function loadNotifications() {
+            try {
+                const notifications = await API.getNotifications();
+                displayNotifications(notifications);
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                showToast('Failed to load notifications', 'error');
+                document.getElementById('notificationsList').innerHTML = `
+                    <div class="empty-state">
+                        <h3 style="color: var(--error-600); margin-bottom: 0.5rem;">Error Loading Notifications</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayNotifications(notifications) {
+            const list = document.getElementById('notificationsList');
+            const badge = document.getElementById('notificationBadge');
+            const notificationCount = document.getElementById('notificationCount');
+            const unreadCount = notifications.filter(n => !n.is_read).length;
+
+            // Update notification badge
+            if (unreadCount > 0) {
+                badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+
+            // Update notification count in sidebar
+            if (notificationCount) {
+                notificationCount.textContent = unreadCount || '0';
+            }
+
+            if (notifications.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <h3 style="color: var(--gray-900); margin-bottom: 0.5rem;">No notifications</h3>
+                        <p>You'll receive notifications when providers accept your requests</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = notifications.map(notification => `
+                <div class="notification-card ${notification.is_read ? '' : 'unread'}" onclick="markAsRead(${notification.id})">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 0.5rem 0; color: var(--gray-900); font-size: 0.875rem; font-weight: 600;">
+                                ${notification.title}
+                            </h4>
+                            <p style="margin: 0; color: var(--gray-600); font-size: 0.875rem;">
+                                ${notification.message}
+                            </p>
+                            <small style="color: var(--gray-500); font-size: 0.75rem;">
+                                ${new Date(notification.created_at).toLocaleString('en-IN')}
+                            </small>
+                        </div>
+                        ${!notification.is_read ? '<span style="color: var(--primary-600); font-size: 0.75rem;">●</span>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function markAsRead(notificationId) {
+            try {
+                await fetch(`http://localhost:5000/api/notifications/${notificationId}/read`, {
+                    method: 'PUT'
+                });
+                loadNotifications(); // Refresh notifications
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        // Features Toggle Function
+        function toggleFeatures() {
+            const featuresSection = document.getElementById('horizontalFeatures');
+            const toggleText = document.querySelector('.features-toggle div:last-child');
+
+            if (featuresSection.style.display === 'none' || featuresSection.style.display === '') {
+                featuresSection.style.display = 'block';
+                toggleText.textContent = 'Click to hide features';
+            } else {
+                featuresSection.style.display = 'none';
+                toggleText.textContent = 'Click to show features';
+            }
+        }
+
+        // Profile Edit Functions
+        function showProfileEditModal() {
+            // Populate form with current user data
+            const user = JSON.parse(localStorage.getItem('user')) || {};
+            document.getElementById('profileName').value = user.name || '';
+            document.getElementById('profileEmail').value = user.email || '';
+            document.getElementById('profilePhone').value = user.phone || '';
+            document.getElementById('profileAddress').value = user.address || '';
+
+            document.getElementById('profileEditModal').classList.add('show');
+        }
+
+        function closeProfileEditModal() {
+            document.getElementById('profileEditModal').classList.remove('show');
+        }
+
+        async function submitProfileEdit(event) {
+            event.preventDefault();
+
+            const formData = {
+                name: document.getElementById('profileName').value,
+                email: document.getElementById('profileEmail').value,
+                contact: document.getElementById('profilePhone').value,
+                address: document.getElementById('profileAddress').value
+            };
+
+            try {
+                await API.updateProfile(formData);
+
+                // Update local storage
+                const user = JSON.parse(localStorage.getItem('user')) || {};
+                user.name = formData.name;
+                user.email = formData.email;
+                user.phone = formData.phone;
+                user.address = formData.address;
+                localStorage.setItem('user', JSON.stringify(user));
+
+                // Update displayed name
+                document.getElementById('userName').textContent = formData.name;
+
+                showToast('Profile updated successfully', 'success');
+                closeProfileEditModal();
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showToast(error.message || 'Failed to update profile', 'error');
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('serviceRequestForm').addEventListener('submit', submitServiceRequest);
+
+        // Load all data on page load
+        async function loadAllData() {
+            await Promise.all([
+                loadDashboard(),
+                loadServiceRequests(),
+                loadNotifications()
+            ]);
+        }
+
+        // Initialize Chart.js
+        let subscriptionChart;
+
+        function initChart() {
+            const ctx = document.getElementById('subscriptionChart').getContext('2d');
+            subscriptionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Active', 'Paused', 'Cancelled'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            '#10b981', // success
+                            '#f59e0b', // warning
+                            '#ef4444'  // error
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                font: {
+                                    size: 12,
+                                    family: 'Inter, sans-serif'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        function updateChart(stats) {
+            if (subscriptionChart) {
+                subscriptionChart.data.datasets[0].data = [
+                    stats.active_subscriptions || 0,
+                    stats.paused_subscriptions || 0,
+                    stats.cancelled_subscriptions || 0
+                ];
+                subscriptionChart.update();
+            }
+        }
+
+        // Upcoming Schedules Functions
+        async function loadUpcomingSchedules() {
+            try {
+                const schedules = await API.getUpcomingSchedules();
+                displayUpcomingSchedules(schedules);
+            } catch (error) {
+                console.error('Error loading upcoming schedules:', error);
+                showToast('Failed to load upcoming schedules', 'error');
+                document.getElementById('upcomingSchedulesList').innerHTML = `
+                    <div class="empty-state">
+                        <h3 style="color: var(--error-600); margin-bottom: 0.5rem;">Error Loading Schedules</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayUpcomingSchedules(schedules) {
+            const list = document.getElementById('upcomingSchedulesList');
+
+            if (schedules.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" fill="#f3f4f6"/>
+                            <path d="M40 60h40M60 40v40" stroke="#9ca3af" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                        <h3 style="color: var(--gray-900); margin-bottom: 0.5rem;">No upcoming services</h3>
+                        <p>All your services are completed or paused</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = schedules.map(schedule => `
+                <div class="service-request-card">
+                    <div class="sub-header">
+                        <div class="sub-info">
+                            <h3>${schedule.service_name}</h3>
+                            <span class="sub-category">${schedule.category}</span>
+                        </div>
+                        <span class="sub-status status-${schedule.status === 'scheduled' ? 'active' : schedule.status === 'in_progress' ? 'paused' : 'cancelled'}">
+                            ${schedule.status.toUpperCase()}
+                        </span>
+                    </div>
+
+                    <div class="sub-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                            </span>
+                            <span>${new Date(schedule.scheduled_date).toLocaleDateString('en-IN')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12,6 12,12 16,14"/>
+                                </svg>
+                            </span>
+                            <span>${schedule.scheduled_time}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="23,4 23,10 17,10"/>
+                                    <polyline points="1,20 1,14 7,14"/>
+                                    <path d="M20.49,9A9,9,0,1,1,5.64,5.64L23,10"/>
+                                </svg>
+                            </span>
+                            <span>${schedule.frequency.charAt(0).toUpperCase() + schedule.frequency.slice(1)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Payment History Functions
+        async function loadPaymentHistory() {
+            try {
+                const payments = await API.getPaymentHistory();
+                displayPaymentHistory(payments);
+            } catch (error) {
+                console.error('Error loading payment history:', error);
+                showToast('Failed to load payment history', 'error');
+                document.getElementById('paymentHistoryList').innerHTML = `
+                    <div class="empty-state">
+                        <h3 style="color: var(--error-600); margin-bottom: 0.5rem;">Error Loading History</h3>
+                        <p>Please try again later</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayPaymentHistory(payments) {
+            const list = document.getElementById('paymentHistoryList');
+
+            if (payments.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" fill="#f3f4f6"/>
+                            <path d="M40 60h40M60 40v40" stroke="#9ca3af" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                        <h3 style="color: var(--gray-900); margin-bottom: 0.5rem;">No payment history</h3>
+                        <p>Your completed payments will appear here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = payments.map(payment => `
+                <div class="service-request-card">
+                    <div class="sub-header">
+                        <div class="sub-info">
+                            <h3>${payment.service_name}</h3>
+                            <span class="sub-category">${payment.frequency.charAt(0).toUpperCase() + payment.frequency.slice(1)}</span>
+                        </div>
+                        <span class="sub-status status-active">COMPLETED</span>
+                    </div>
+
+                    <div class="sub-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                            </span>
+                            <span>${new Date(payment.payment_date).toLocaleDateString('en-IN')}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23"/>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                </svg>
+                            </span>
+                            <span>₹${Math.round(payment.amount)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                            </span>
+                            <span>${payment.transaction_id}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Load all data on page load
+        async function loadAllData() {
+            initChart();
+            await Promise.all([
+                loadDashboard(),
+                loadServiceRequests(),
+                loadNotifications(),
+                loadUpcomingSchedules(),
+                loadPaymentHistory()
+            ]);
+        }
+
+        // Auto-refresh dashboard every 30 seconds
+        setInterval(loadDashboard, 30000);
+
+        // Auto-refresh service requests and notifications every 5 seconds for faster updates
+        setInterval(() => {
+            loadServiceRequests();
+            loadNotifications();
+            loadUpcomingSchedules();
+            loadPaymentHistory();
+        }, 5000);
+    </script>
+</body>
+</html>

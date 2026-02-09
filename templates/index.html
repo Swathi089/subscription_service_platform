@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ServeEase - Your Local Service Platform</title>
+    <link rel="stylesheet" href="static/css/modern-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                    <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+                    <path d="M16 24L12 18H20L16 24Z" fill="white"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop stop-color="#667eea"/>
+                            <stop offset="1" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="brand-name">ServeEase</span>
+            </div>
+            <div class="nav-links">
+                <a href="#services">Services</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#features">Features</a>
+                <a href="/login" class="nav-btn">Login</a>
+                <a href="/register" class="nav-btn-primary">Get Started</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-background">
+            <div class="gradient-orb orb-1"></div>
+            <div class="gradient-orb orb-2"></div>
+            <div class="gradient-orb orb-3"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    Trusted by 10,000+ customers
+                </div>
+                <h1 class="hero-title">
+                    Your Local Services,
+                    <span class="gradient-text">Simplified</span>
+                </h1>
+                <p class="hero-description">
+                    Subscribe to expert local services from cleaning to plumbing, AC maintenance to electrical work. 
+                    Automated scheduling, transparent pricing, and reliable professionals.
+                </p>
+                <div class="hero-cta">
+                    <a href="javascript:void(0)" onclick="checkAuthAndNavigate(event, '/services')" class="btn-large btn-primary">
+                        Explore Services
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </a>
+                    <a href="#how-it-works" class="btn-large btn-secondary">
+                        Learn More
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Service Providers</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-number">10,000+</div>
+                        <div class="stat-label">Happy Customers</div>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <div class="stat-number">4.8★</div>
+                        <div class="stat-label">Average Rating</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Popular Services</h2>
+                <p class="section-description">Explore our wide range of professional local services</p>
+            </div>
+            <div class="services-grid" id="servicesGrid">
+                <!-- Services will be loaded dynamically -->
+            </div>
+            <div class="section-cta">
+                <a href="javascript:void(0)" onclick="checkAuthAndNavigate(event, '/services')" class="btn-outline">View All Services →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">How It Works</h2>
+                <p class="section-description">Get started in just 3 simple steps</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <circle cx="24" cy="24" r="20" fill="#EEF2FF"/>
+                            <path d="M24 14V34M14 24H34" stroke="#667eea" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="step-number">01</div>
+                    <h3>Choose a Service</h3>
+                    <p>Browse through our catalog and select the service you need</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <circle cx="24" cy="24" r="20" fill="#F0FDF4"/>
+                            <path d="M16 24L22 30L32 18" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="step-number">02</div>
+                    <h3>Pick Your Schedule</h3>
+                    <p>Choose frequency and preferred time slots that work for you</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <circle cx="24" cy="24" r="20" fill="#FEF2F2"/>
+                            <path d="M20 24L24 28L28 20" stroke="#ef4444" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                    <div class="step-number">03</div>
+                    <h3>Relax & Enjoy</h3>
+                    <p>Our professionals take care of everything on schedule</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <div class="features-layout">
+                <div class="features-content">
+                    <h2 class="section-title">Why Choose ServeEase?</h2>
+                    <div class="feature-list">
+                        <div class="feature-item">
+                            <div class="feature-icon-small">✓</div>
+                            <div>
+                                <h4>Verified Professionals</h4>
+                                <p>All service providers are background-checked and verified</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-small">✓</div>
+                            <div>
+                                <h4>Transparent Pricing</h4>
+                                <p>No hidden fees. See exactly what you're paying for</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-small">✓</div>
+                            <div>
+                                <h4>Flexible Plans</h4>
+                                <p>Choose from daily, weekly, monthly, or custom schedules</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon-small">✓</div>
+                            <div>
+                                <h4>Easy Management</h4>
+                                <p>Pause, reschedule, or cancel anytime from your dashboard</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="features-visual">
+                    <div class="feature-card-visual">
+                        <div class="visual-header">
+                            <span class="visual-dot"></span>
+                            <span class="visual-dot"></span>
+                            <span class="visual-dot"></span>
+                        </div>
+                        <div class="visual-content">
+                            <div class="visual-stat">
+                                <span class="visual-label">Active Subscriptions</span>
+                                <span class="visual-value">8</span>
+                            </div>
+                            <div class="visual-stat">
+                                <span class="visual-label">Next Service</span>
+                                <span class="visual-value">Tomorrow</span>
+                            </div>
+                            <div class="visual-progress">
+                                <div class="progress-bar" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-card">
+                <h2>Ready to Get Started?</h2>
+                <p>Join thousands of satisfied customers enjoying hassle-free local services</p>
+                <div class="cta-buttons">
+                    <a href="/register" class="btn-large btn-primary">Create Account</a>
+                    <a href="javascript:void(0)" onclick="checkAuthAndNavigate(event, '/services')" class="btn-large btn-secondary">Browse Services</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-brand">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                            <rect width="32" height="32" rx="8" fill="url(#gradient2)"/>
+                            <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+                            <path d="M16 24L12 18H20L16 24Z" fill="white"/>
+                            <defs>
+                                <linearGradient id="gradient2" x1="0" y1="0" x2="32" y2="32">
+                                    <stop stop-color="#667eea"/>
+                                    <stop offset="1" stop-color="#764ba2"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <span>ServeEase</span>
+                    </div>
+                    <p>Your trusted platform for local service subscriptions</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <a href="#">Cleaning</a>
+                    <a href="#">Gardening</a>
+                    <a href="#">Plumbing</a>
+                    <a href="#">Electrical</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <a href="#">About Us</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Careers</a>
+                    <a href="#">Blog</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <a href="#">Help Center</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ServeEase. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            
+            </div>
+        </div>
+    </div>
+
+    <script src="static/js/app.js"></script>
+    <script>
+        // Load featured services
+        async function loadFeaturedServices() {
+            // Check if user is authenticated before loading services
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                // Don't load services for unauthenticated users
+                console.log('User not authenticated, skipping service loading');
+                return;
+            }
+
+            try {
+                const services = await API.getServices();
+                displayServices(services.slice(0, 6));
+            } catch (error) {
+                console.error('Error loading services:', error);
+                showToast('Failed to load services', 'error');
+            }
+        }
+
+        function displayServices(services) {
+            const grid = document.getElementById('servicesGrid');
+            grid.innerHTML = services.map(service => `
+                <div class="service-card-modern">
+                    <div class="service-image" style="background-image: url('${service.image_url}')">
+                        ${service.discount_percentage > 0 ? `<div class="service-badge">${service.discount_percentage}% OFF</div>` : ''}
+                    </div>
+                    <div class="service-content">
+                        <div class="service-category">${service.category}</div>
+                        <h3>${service.name}</h3>
+                        <p>${service.description}</p>
+                        <div class="service-footer">
+                            <div class="service-rating">
+                                <span class="rating-star">★</span>
+                                <span>${service.rating}</span>
+                                <span class="rating-count">(${service.total_bookings})</span>
+                            </div>
+                            <div class="service-price">
+                                ${service.discount_percentage > 0 ?
+                                    `<span class="price-original">₹${service.price}</span>
+                                     <span class="price-final">₹${Math.round(service.price * (1 - service.discount_percentage/100))}</span>` :
+                                    `<span class="price-final">₹${service.price}</span>`
+                                }
+                            </div>
+                        </div>
+                        <a href="#" onclick="checkAuthAndNavigate(event, '/service-details?id=${service.id}')" class="btn-card">View Details</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleMobileMenu() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        }
+
+        // Authentication check function
+        function checkAuthAndNavigate(event, url) {
+            event.preventDefault(); // Prevent default link behavior
+            const goToLogin = confirm('You need to login or create an account to access our services and explore all available options.\n\nClick OK to go to Login, Cancel to go to Register.');
+            if (goToLogin) {
+                window.location.href = '/login';
+            } else {
+                window.location.href = '/register';
+            }
+            return false; // Prevent navigation
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFeaturedServices();
+        });
+    </script>
+</body>
+</html>

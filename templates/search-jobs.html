@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Jobs - ServeEase</title>
+    <link rel="stylesheet" href="static/css/modern-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .jobs-page {
+            background: var(--gray-50);
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+        .page-header {
+            background: white;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 2rem;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .welcome-text h1 {
+            font-size: 2rem;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        .welcome-text p {
+            color: var(--gray-600);
+        }
+        .section-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        .filters-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .filter-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+        .filter-select, .filter-input {
+            padding: 0.5rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+        }
+        .job-card {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: var(--gray-50);
+            transition: all 0.3s;
+        }
+        .job-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+        .job-info h3 {
+            font-size: 1.25rem;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        .job-category {
+            display: inline-block;
+            background: #eef2ff;
+            color: var(--primary-600);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .job-status {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .status-available {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .job-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: var(--radius);
+        }
+        .detail-item {
+            display: flex;
+            align-items: start;
+            gap: 0.5rem;
+        }
+        .detail-icon {
+            color: var(--primary-600);
+            margin-top: 2px;
+        }
+        .detail-content {
+            flex: 1;
+        }
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+        .detail-value {
+            color: var(--gray-900);
+            font-weight: 600;
+        }
+        .job-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .btn-action {
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        .btn-accept {
+            background: var(--success-500);
+            color: white;
+        }
+        .btn-accept:hover {
+            background: var(--success-600);
+        }
+        .btn-accept:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-600);
+        }
+        .empty-state svg {
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            .job-header {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .filters-section {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                    <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+                    <path d="M16 24L12 18H20L16 24Z" fill="white"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop stop-color="#667eea"/>
+                            <stop offset="1" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="brand-name">ServeEase</span>
+            </div>
+            <div class="nav-links">
+                <a href="provider-dashboard.html">Dashboard</a>
+                <a href="#" id="logoutBtn" class="nav-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="jobs-page">
+        <div class="page-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="welcome-text">
+                        <h1>Search Jobs</h1>
+                        <p>Find and accept available service requests</p>
+                    </div>
+                    <button class="btn-large btn-primary" onclick="window.location.href='provider-dashboard.html'">
+                        ← Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Filters -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Filters</h2>
+                </div>
+                <div class="filters-section">
+                    <div class="filter-group">
+                        <label class="filter-label">Category</label>
+                        <select class="filter-select" id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="Cleaning">Cleaning</option>
+                            <option value="Gardening">Gardening</option>
+                            <option value="Plumbing">Plumbing</option>
+                            <option value="AC Service">AC Service</option>
+                            <option value="Electrical">Electrical</option>
+                            <option value="Painting">Painting</option>
+                            <option value="Pest Control">Pest Control</option>
+                            <option value="Car Care">Car Care</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Location</label>
+                        <input type="text" class="filter-input" id="locationFilter" placeholder="Enter city or area">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Date Range</label>
+                        <select class="filter-select" id="dateFilter">
+                            <option value="">All Dates</option>
+                            <option value="today">Today</option>
+                            <option value="tomorrow">Tomorrow</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Sort By</label>
+                        <select class="filter-select" id="sortFilter">
+                            <option value="date">Date</option>
+                            <option value="category">Category</option>
+                            <option value="location">Location</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Jobs List -->
+            <div class="section-card">
+                <div class="section-header">
+                    <h2 class="section-title">Available Jobs</h2>
+                </div>
+                <div id="jobsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // const user = JSON.parse(localStorage.getItem('user'));
+        let allJobs = [];
+
+        // Temporarily disabled authentication for testing
+        // if (!user || user.role !== 'provider') {
+        //     window.location.href = 'login.html';
+        // }
+
+        async function loadJobs() {
+            try {
+                const response = await fetch('http://localhost:5000/api/available-jobs', { credentials: 'include' });
+                allJobs = await response.json();
+                displayJobs(allJobs);
+            } catch (error) {
+                console.error('Error loading jobs:', error);
+                document.getElementById('jobsList').innerHTML = `
+                    <div class="empty-state">
+                        <h3 style="color: var(--gray-900); margin-bottom: 0.5rem;">Unable to load jobs</h3>
+                        <p>Please check your connection and try again</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayJobs(jobs) {
+            const list = document.getElementById('jobsList');
+
+            if (jobs.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" fill="#f3f4f6"/>
+                            <path d="M40 60h40M60 40v40" stroke="#9ca3af" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                        <h3 style="color: var(--gray-900); margin-bottom: 0.5rem;">No available jobs</h3>
+                        <p>New service requests will appear here as they become available</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = jobs.map(job => `
+                <div class="job-card">
+                    <div class="job-header">
+                        <div class="job-info">
+                            <h3>${job.service_name}</h3>
+                            <span class="job-category">${job.category}</span>
+                        </div>
+                        <span class="job-status status-available">AVAILABLE</span>
+                    </div>
+
+                    <div class="job-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">👤</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Customer</div>
+                                <div class="detail-value">${job.customer_name}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📞</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Contact</div>
+                                <div class="detail-value">${job.contact || 'N/A'}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📅</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Scheduled Date</div>
+                                <div class="detail-value">${new Date(job.scheduled_date).toLocaleDateString('en-IN')}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📅</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Day</div>
+                                <div class="detail-value">${new Date(job.scheduled_date).toLocaleDateString('en-IN', { weekday: 'long' })}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">⏰</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Time</div>
+                                <div class="detail-value">${job.preferred_time}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🔄</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Frequency</div>
+                                <div class="detail-value">${job.frequency.charAt(0).toUpperCase() + job.frequency.slice(1)}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📍</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Location</div>
+                                <div class="detail-value">${job.address || 'N/A'}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">💰</span>
+                            <div class="detail-content">
+                                <div class="detail-label">Price</div>
+                                <div class="detail-value">₹${job.price || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="job-actions">
+                        <button class="btn-action btn-accept" onclick="acceptJob(${job.id})" id="acceptBtn-${job.id}">
+                            ✅ Accept Job
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function acceptJob(jobId) {
+            const btn = document.getElementById(`acceptBtn-${jobId}`);
+            btn.disabled = true;
+            btn.textContent = 'Accepting...';
+
+            try {
+                const response = await fetch(`http://localhost:5000/api/accept-job/${jobId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    alert('Job accepted successfully! You can now manage this job from your dashboard.');
+                    loadJobs(); // Reload to remove the accepted job
+                } else {
+                    const data = await response.json();
+                    alert(`Failed to accept job: ${data.error || 'Unknown error'}`);
+                    btn.disabled = false;
+                    btn.textContent = '✅ Accept Job';
+                }
+            } catch (error) {
+                alert('Error accepting job. Please try again.');
+                btn.disabled = false;
+                btn.textContent = '✅ Accept Job';
+            }
+        }
+
+        // Filter functionality
+        document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+        document.getElementById('locationFilter').addEventListener('input', applyFilters);
+        document.getElementById('dateFilter').addEventListener('change', applyFilters);
+        document.getElementById('sortFilter').addEventListener('change', applyFilters);
+
+        function applyFilters() {
+            const category = document.getElementById('categoryFilter').value;
+            const location = document.getElementById('locationFilter').value.toLowerCase();
+            const dateRange = document.getElementById('dateFilter').value;
+            const sortBy = document.getElementById('sortFilter').value;
+
+            let filteredJobs = allJobs.filter(job => {
+                if (category && job.category !== category) return false;
+                if (location && !job.address?.toLowerCase().includes(location)) return false;
+
+                if (dateRange) {
+                    const jobDate = new Date(job.scheduled_date);
+                    const today = new Date();
+                    const tomorrow = new Date(today);
+                    tomorrow.setDate(today.getDate() + 1);
+                    const weekFromNow = new Date(today);
+                    weekFromNow.setDate(today.getDate() + 7);
+                    const monthFromNow = new Date(today);
+                    monthFromNow.setMonth(today.getMonth() + 1);
+
+                    switch (dateRange) {
+                        case 'today':
+                            if (jobDate.toDateString() !== today.toDateString()) return false;
+                            break;
+                        case 'tomorrow':
+                            if (jobDate.toDateString() !== tomorrow.toDateString()) return false;
+                            break;
+                        case 'week':
+                            if (jobDate > weekFromNow) return false;
+                            break;
+                        case 'month':
+                            if (jobDate > monthFromNow) return false;
+                            break;
+                    }
+                }
+
+                return true;
+            });
+
+            // Sort
+            filteredJobs.sort((a, b) => {
+                switch (sortBy) {
+                    case 'date':
+                        return new Date(a.scheduled_date) - new Date(b.scheduled_date);
+                    case 'category':
+                        return a.category.localeCompare(b.category);
+                    case 'location':
+                        return (a.address || '').localeCompare(b.address || '');
+                    default:
+                        return 0;
+                }
+            });
+
+            displayJobs(filteredJobs);
+        }
+
+        document.getElementById('logoutBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            await fetch('http://localhost:5000/api/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        });
+
+        loadJobs();
+    </script>
+    <script src="static/js/app.js"></script>
+</body>
+</html>

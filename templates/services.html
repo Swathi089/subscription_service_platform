@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Services - ServeEase</title>
+    <link rel="stylesheet" href="static/css/modern-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 6rem 0 4rem;
+            margin-top: 70px;
+            color: white;
+            text-align: center;
+        }
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .search-section {
+            padding: 3rem 0;
+            background: white;
+            position: sticky;
+            top: 70px;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+        .search-bar {
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            gap: 1rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .search-input {
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-600);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .category-filter {
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+            min-width: 200px;
+        }
+        .btn-search {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .btn-reset {
+            padding: 1rem 1.5rem;
+            background: white;
+            color: var(--gray-700);
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-reset:hover {
+            background: var(--gray-50);
+        }
+        .services-container {
+            padding: 4rem 0;
+            background: var(--gray-50);
+        }
+        .category-pills {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+        .category-pill {
+            padding: 0.5rem 1.5rem;
+            border: 2px solid var(--gray-300);
+            border-radius: 2rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        .category-pill:hover,
+        .category-pill.active {
+            background: var(--primary-600);
+            color: white;
+            border-color: var(--primary-600);
+        }
+        .services-count {
+            text-align: center;
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+        }
+        .no-services {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-600);
+        }
+        .no-services svg {
+            margin-bottom: 1rem;
+        }
+        @media (max-width: 768px) {
+            .search-bar {
+                grid-template-columns: 1fr;
+            }
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                    <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+                    <path d="M16 24L12 18H20L16 24Z" fill="white"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop stop-color="#667eea"/>
+                            <stop offset="1" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="brand-name">ServeEase</span>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/services">Services</a>
+                <a href="#" id="dashboardLink" style="display: none;">Dashboard</a>
+                <a href="/login" id="loginLink">Login</a>
+                <a href="/register" id="registerLink" class="nav-btn-primary">Get Started</a>
+                <a href="#" id="logoutLink" class="nav-btn" style="display: none;">Logout</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container">
+            <h1>Explore Our Services</h1>
+            <p style="font-size: 1.25rem; opacity: 0.9;">Find the perfect service for your needs</p>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+        <div class="container">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search for services...">
+                <select class="category-filter" id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="Gardening">🌱 Gardening</option>
+                    <option value="Cleaning">🧹 Cleaning</option>
+                    <option value="Plumbing">🔧 Plumbing</option>
+                    <option value="AC Service">❄️ AC Service</option>
+                    <option value="Electrical">⚡ Electrical</option>
+                    <option value="Painting">🎨 Painting</option>
+                    <option value="Pest Control">🐛 Pest Control</option>
+                    <option value="Car Care">🚗 Car Care</option>
+                </select>
+                <button class="btn-search" onclick="searchServices()">Search</button>
+                <button class="btn-reset" onclick="resetFilters()">Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content">
+           
+            <div class="modal-body">
+                
+               
+                
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Container -->
+    <div class="services-container">
+        <div class="container">
+            <div class="services-count" id="servicesCount"></div>
+            <div class="services-grid" id="servicesGrid"></div>
+        </div>
+    </div>
+
+    <script src="static/js/app.js"></script>
+    <script>
+        // Frontend authentication check
+        const user = JSON.parse(localStorage.getItem('user'));
+        let allServices = [];
+
+        // Update nav based on login status
+        if (user) {
+            document.getElementById('loginLink').style.display = 'none';
+            document.getElementById('registerLink').style.display = 'none';
+            document.getElementById('dashboardLink').style.display = 'block';
+            document.getElementById('logoutLink').style.display = 'block';
+
+            if (user.role === 'customer') {
+                document.getElementById('dashboardLink').href = '/customer-dashboard';
+            } else {
+                document.getElementById('dashboardLink').href = '/provider-dashboard';
+            }
+        } else {
+            // Show auth modal for non-logged-in users
+            showAuthModal();
+        }
+
+        document.getElementById('logoutLink')?.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                await API.logout();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+            localStorage.removeItem('user');
+            window.location.href = '/';
+        });
+
+        async function loadServices(search = '', category = '') {
+            try {
+                const services = await API.getServices(search, category);
+                allServices = services;
+                displayServices(allServices);
+            } catch (error) {
+                console.error('Error loading services:', error);
+                showToast('Failed to load services', 'error');
+                document.getElementById('servicesGrid').innerHTML = `
+                    <div class="no-services">
+                        <p>Unable to load services. Please make sure the backend is running.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayServices(services) {
+            const grid = document.getElementById('servicesGrid');
+            const count = document.getElementById('servicesCount');
+            
+            count.textContent = `${services.length} service${services.length !== 1 ? 's' : ''} found`;
+            
+            if (services.length === 0) {
+                grid.innerHTML = `
+                    <div class="no-services">
+                        <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+                            <circle cx="60" cy="60" r="50" fill="#f3f4f6"/>
+                            <path d="M45 60L55 70L75 50" stroke="#9ca3af" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                        <h3 style="color: var(--gray-900); margin-bottom: 0.5rem;">No services found</h3>
+                        <p>Try adjusting your search or filters</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            grid.innerHTML = services.map(service => {
+                const finalPrice = service.price * (1 - service.discount_percentage/100);
+                return `
+                    <div class="service-card-modern">
+                        <div class="service-image" style="background-image: url('${service.image_url || 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400'}')">
+                            ${service.discount_percentage > 0 ? `<div class="service-badge">${service.discount_percentage}% OFF</div>` : ''}
+                        </div>
+                        <div class="service-content">
+                            <div class="service-category">${service.category}</div>
+                            <h3>${service.name}</h3>
+                            <p>${service.description}</p>
+                            <div class="service-footer">
+                                <div class="service-rating">
+                                    <span class="rating-star">★</span>
+                                    <span>${service.rating.toFixed(1)}</span>
+                                    <span class="rating-count">(${service.total_bookings})</span>
+                                </div>
+                                <div class="service-price">
+                                    ${service.discount_percentage > 0 ? 
+                                        `<span class="price-original">₹${service.price}</span>
+                                         <span class="price-final">₹${Math.round(finalPrice)}</span>` :
+                                        `<span class="price-final">₹${service.price}</span>`
+                                    }
+                                </div>
+                            </div>
+                        <a href="#" onclick="checkAuthAndNavigate('/service-details?id=${service.id}')" class="btn-card">View Details</a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function searchServices() {
+            const search = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+            loadServices(search, category);
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('categoryFilter').value = '';
+            loadServices();
+        }
+
+        function toggleMobileMenu() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        }
+
+        // Authentication check function
+        function checkAuthAndNavigate(url) {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                showAuthModal();
+                return false; // Prevent navigation
+            } else {
+                window.location.href = url;
+                return true;
+            }
+        }
+
+        // Show authentication modal
+        function showAuthModal() {
+            document.getElementById('authModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close authentication modal
+        function closeAuthModal() {
+            document.getElementById('authModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('authModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeAuthModal();
+            }
+        });
+
+        // Load services on page load
+        loadServices();
+
+        // Search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchServices();
+        });
+    </script>
+</body>
+</html>

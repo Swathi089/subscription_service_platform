@@ -1,0 +1,546 @@
+ <!-- Search Section -->
+    <div class="search-section">
+        <div class="container">
+            <div class="search-bar">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search for services..." aria-label="Search services">
+                <select class="category-filter" id="categoryFilter" aria-label="Filter by category">
+                    <option value="">All Categories</option>
+                    <option value="Gardening">🌱 Gardening</option>
+                    <option value="Cleaning">🧹 Cleaning</option>
+                    <option value="Plumbing">🔧 Plumbing</option>
+                    <option value="AC Service">❄️ AC Service</option>
+                    <option value="Electrical">⚡ Electrical</option>
+                    <option value="Painting">🎨 Painting</option>
+                    <option value="Pest Control">🐛 Pest Control</option>
+                    <option value="Car Care">🚗 Car Care</option>
+                </select>
+                <button class="btn-search" onclick="searchServices()" aria-label="Search services">Search</button>
+                <button class="btn-reset" onclick="resetFilters()" aria-label="Reset all filters">Reset</button>
+                <button class="btn-advanced" onclick="toggleAdvancedFilters()" aria-label="Toggle advanced filters">
+                    <span class="filter-icon">⚙️</span>
+                    Filters
+                </button>
+            </div>
+            <div class="advanced-filters" id="advancedFilters">
+                <div class="filter-group">
+                    <label class="filter-label">Price Range (₹)</label>
+                    <div class="price-range">
+                        <input type="number" class="price-input" id="minPrice" placeholder="Min" aria-label="Minimum price">
+                        <span>to</span>
+                        <input type="number" class="price-input" id="maxPrice" placeholder="Max" aria-label="Maximum price">
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Minimum Rating</label>
+                    <div class="rating-filter">
+                        <label class="rating-checkbox">
+                            <input type="radio" name="rating" value="4" aria-label="4 stars and above"> 4★+
+                        </label>
+                        <label class="rating-checkbox">
+                            <input type="radio" name="rating" value="3" aria-label="3 stars and above"> 3★+
+                        </label>
+                        <label class="rating-checkbox">
+                            <input type="radio" name="rating" value="0" checked aria-label="All ratings"> All
+                        </label>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <button class="btn-set" onclick="applyFilters()" aria-label="Apply filters">Set</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscribe - ServeEase</title>
+    <link rel="stylesheet" href="static/css/modern-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        .subscribe-container {
+            max-width: 1000px;
+            margin: 100px auto 4rem;
+            padding: 0 1.5rem;
+        }
+        .subscribe-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 2rem;
+        }
+        .form-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-md);
+        }
+        .form-header {
+            margin-bottom: 2rem;
+        }
+        .form-header h2 {
+            font-size: 1.75rem;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+        .form-header p {
+            color: var(--gray-600);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-900);
+        }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-600);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+        .time-slot {
+            padding: 0.875rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        .time-slot:hover {
+            border-color: var(--primary-600);
+            background: var(--gray-50);
+        }
+        .time-slot.selected {
+            background: var(--primary-600);
+            color: white;
+            border-color: var(--primary-600);
+        }
+        .summary-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 100px;
+        }
+        .service-summary {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+        .service-thumb {
+            width: 80px;
+            height: 80px;
+            background-size: cover;
+            background-position: center;
+            border-radius: var(--radius);
+        }
+        .service-summary-info h3 {
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+            color: var(--gray-900);
+        }
+        .service-summary-cat {
+            font-size: 0.875rem;
+            color: var(--primary-600);
+            font-weight: 600;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .summary-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .summary-label {
+            color: var(--gray-600);
+        }
+        .summary-value {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+        .total-section {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            margin: 1.5rem 0;
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .total-label {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        .total-amount {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--success-600);
+        }
+        .btn-subscribe-now {
+            width: 100%;
+            padding: 1.25rem;
+            background: linear-gradient(135deg, var(--primary-600), var(--secondary-600));
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-subscribe-now:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+        }
+        .btn-subscribe-now:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .security-note {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+        .alert-info {
+            background: #eff6ff;
+            color: var(--primary-700);
+            border: 1px solid var(--primary-600);
+        }
+        .payment-methods {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+            opacity: 0.6;
+        }
+        .payment-icon {
+            height: 24px;
+        }
+        @media (max-width: 768px) {
+            .subscribe-grid {
+                grid-template-columns: 1fr;
+            }
+            .summary-card {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <rect width="32" height="32" rx="8" fill="url(#gradient)"/>
+                    <path d="M16 8L20 14H12L16 8Z" fill="white"/>
+                    <path d="M16 24L12 18H20L16 24Z" fill="white"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+                            <stop stop-color="#667eea"/>
+                            <stop offset="1" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="brand-name">ServeEase</span>
+            </div>
+            <div class="nav-links">
+                <a href="/customer-dashboard">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="subscribe-container">
+        <h1 style="margin-bottom: 2rem;">Complete Your Subscription</h1>
+        
+        <div class="subscribe-grid">
+            <div class="form-card">
+                <div class="form-header">
+                    <h2>Subscription Details</h2>
+                    <p>Configure your service schedule and preferences</p>
+                </div>
+
+                <div id="subscriptionForm">
+                    <div class="form-group">
+                        <label class="form-label">Service Frequency</label>
+                        <select class="form-select" id="frequency" required onchange="updateSummary()">
+                            <option value="daily">Daily - Best for regular maintenance</option>
+                            <option value="weekly">Weekly - Most popular</option>
+                            <option value="monthly" selected>Monthly - Standard service</option>
+                            <option value="quarterly">Quarterly - Seasonal service</option>
+                            <option value="half-yearly">Half-Yearly - Periodic maintenance</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" class="form-input" id="startDate" required onchange="updateSummary()">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Preferred Time Slot</label>
+                        <div class="time-slots">
+                            <div class="time-slot selected" onclick="selectTimeSlot('morning', this)">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">🌅</div>
+                                <div style="font-weight: 600;">Morning</div>
+                                <div style="font-size: 0.75rem; opacity: 0.8;">8 AM - 12 PM</div>
+                            </div>
+                            <div class="time-slot" onclick="selectTimeSlot('afternoon', this)">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">☀️</div>
+                                <div style="font-weight: 600;">Afternoon</div>
+                                <div style="font-size: 0.75rem; opacity: 0.8;">12 PM - 4 PM</div>
+                            </div>
+                            <div class="time-slot" onclick="selectTimeSlot('evening', this)">
+                                <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">🌆</div>
+                                <div style="font-weight: 600;">Evening</div>
+                                <div style="font-size: 0.75rem; opacity: 0.8;">4 PM - 8 PM</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="preferredTime" value="morning">
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Note:</strong> You can pause, modify, or cancel your subscription anytime from your dashboard.
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <h3 style="margin-bottom: 1.5rem;">Order Summary</h3>
+                
+                <div class="service-summary" id="serviceSummary">
+                    <!-- Service details will be loaded here -->
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Frequency:</span>
+                    <span class="summary-value" id="summaryFrequency">Monthly</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Start Date:</span>
+                    <span class="summary-value" id="summaryStartDate">-</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Time Slot:</span>
+                    <span class="summary-value" id="summaryTimeSlot">Morning (8 AM - 12 PM)</span>
+                </div>
+
+                <div class="summary-row">
+                    <span class="summary-label">Service Price:</span>
+                    <span class="summary-value" id="summaryPrice">₹0</span>
+                </div>
+
+                <div class="summary-row" id="discountRow" style="display: none;">
+                    <span class="summary-label">Discount:</span>
+                    <span class="summary-value" style="color: var(--success-600);" id="summaryDiscount">-₹0</span>
+                </div>
+
+                <div class="total-section">
+                    <div class="total-row">
+                        <span class="total-label">Total Amount:</span>
+                        <span class="total-amount" id="totalAmount">₹0</span>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-subscribe-now" id="subscribeBtn" onclick="handleSubscription()">
+                    Subscribe Now
+                </button>
+
+                <div class="security-note">
+                    🔒 Free subscription • Cancel anytime
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const serviceId = urlParams.get('service');
+        const preselectedFrequency = urlParams.get('frequency');
+        
+        let currentService = null;
+        let selectedTime = 'morning';
+        let razorpayKeyId = '';
+
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem('user'));
+        // Temporarily disabled authentication check for testing
+        // if (!user || user.role !== 'customer') {
+        //     window.location.href = '/login';
+        // }
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate').setAttribute('min', today);
+        document.getElementById('startDate').value = today;
+
+        // Set preselected frequency if exists
+        if (preselectedFrequency) {
+            document.getElementById('frequency').value = preselectedFrequency;
+        }
+
+        // Load Razorpay configuration
+        async function loadRazorpayConfig() {
+            try {
+                const response = await fetch('http://localhost:5000/api/razorpay/config');
+                const config = await response.json();
+                razorpayKeyId = config.key_id;
+            } catch (error) {
+                console.error('Error loading Razorpay config:', error);
+            }
+        }
+
+        async function loadServiceDetails() {
+            try {
+                const response = await fetch(`http://localhost:5000/api/services/${serviceId}`);
+                currentService = await response.json();
+                
+                const finalPrice = currentService.price * (1 - currentService.discount_percentage/100);
+                
+                document.getElementById('serviceSummary').innerHTML = `
+                    <div class="service-thumb" style="background-image: url('${currentService.image_url}')"></div>
+                    <div class="service-summary-info">
+                        <h3>${currentService.name}</h3>
+                        <div class="service-summary-cat">${currentService.category}</div>
+                    </div>
+                `;
+                
+                updateSummary();
+            } catch (error) {
+                console.error('Error loading service:', error);
+                alert('Service not found');
+                window.location.href = '/services';
+            }
+        }
+
+        function selectTimeSlot(time, element) {
+            selectedTime = time;
+            document.getElementById('preferredTime').value = time;
+            document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            const timeMap = {
+                morning: 'Morning (8 AM - 12 PM)',
+                afternoon: 'Afternoon (12 PM - 4 PM)',
+                evening: 'Evening (4 PM - 8 PM)'
+            };
+            document.getElementById('summaryTimeSlot').textContent = timeMap[time];
+        }
+
+        function updateSummary() {
+            if (!currentService) return;
+            
+            const frequency = document.getElementById('frequency').value;
+            const startDate = document.getElementById('startDate').value;
+            
+            const finalPrice = currentService.price * (1 - currentService.discount_percentage/100);
+            const discount = currentService.price - finalPrice;
+            
+            document.getElementById('summaryFrequency').textContent = 
+                frequency.charAt(0).toUpperCase() + frequency.slice(1);
+            document.getElementById('summaryStartDate').textContent = 
+                startDate ? new Date(startDate).toLocaleDateString('en-IN', { 
+                    year: 'numeric', month: 'long', day: 'numeric' 
+                }) : '-';
+            document.getElementById('summaryPrice').textContent = `₹${currentService.price}`;
+            
+            if (currentService.discount_percentage > 0) {
+                document.getElementById('discountRow').style.display = 'flex';
+                document.getElementById('summaryDiscount').textContent = `-₹${Math.round(discount)}`;
+            }
+            
+            document.getElementById('totalAmount').textContent = `₹${Math.round(finalPrice)}`;
+        }
+
+        async function handleSubscription() {
+            const frequency = document.getElementById('frequency').value;
+            const startDate = document.getElementById('startDate').value;
+            const preferredTime = document.getElementById('preferredTime').value;
+            
+            if (!startDate) {
+                alert('Please select a start date');
+                return;
+            }
+
+            const subscribeBtn = document.getElementById('subscribeBtn');
+            subscribeBtn.disabled = true;
+            subscribeBtn.textContent = 'Creating Order...';
+            
+            try {
+                // Create order on backend
+                const orderResponse = await fetch('http://localhost:5000/api/create-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        service_id: serviceId,
+                        frequency,
+                        start_date: startDate,
+                        preferred_time: preferredTime
+                    })
+                });
+                
+                const orderData = await orderResponse.json();
+                
+                if (!orderResponse.ok) {
+                    throw new Error(orderData.error || 'Failed to create order');
+                }
+
+                // Subscription created successfully - redirect to dashboard
+                alert('Subscription created successfully! Your subscription is now active.');
+                window.location.href = '/customer-dashboard';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message || 'Failed to create order. Please try again.');
+                subscribeBtn.disabled = false;
+                subscribeBtn.textContent = 'Subscribe Now';
+            }
+        }
+
+
+
+        // Initialize
+        loadServiceDetails();
+        updateSummary();
+    </script>
+    <script src="static/js/app.js"></script>
+</body>
+</html>
