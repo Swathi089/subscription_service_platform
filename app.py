@@ -607,8 +607,9 @@ def get_razorpay_config():
 # @login_required  # Temporarily disabled for testing
 def create_order():
     data = request.json
-    # For testing without authentication, use a default user_id
-    user_id = 1  # Default to user ID 1 for testing
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Authentication required'}), 401
 
     # 'instant' or 'subscription'
     service_type = data.get('type', 'subscription')
@@ -782,14 +783,16 @@ def verify_payment():
 @app.route('/api/subscriptions', methods=['GET'])
 # @login_required  # Temporarily disabled for testing
 def get_subscriptions():
-    # user_id = session['user_id']
-    user_id = 1  # Default to user ID 1 for testing
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify([]), 200
     conn = get_db()
     c = conn.cursor()
     c.execute('''SELECT s.*, srv.name as service_name, srv.category, srv.price, srv.image_url,
-                 srv.rating as service_rating
+                 srv.rating as service_rating, u.name as provider_name, u.contact as provider_contact
                  FROM subscriptions s
                  JOIN services srv ON s.service_id = srv.id
+                 JOIN users u ON srv.provider_id = u.id
                  WHERE s.customer_id = ? AND s.status != 'pending'
                  ORDER BY s.created_at DESC''', (user_id,))
     subs = [dict(row) for row in c.fetchall()]
@@ -826,10 +829,8 @@ def manage_subscription(sub_id):
 
 
 def generate_service_requests(cursor, subscription_id, service_id, start_date, end_date, frequency, preferred_time):
-    cursor.execute(
-        'SELECT provider_id FROM services WHERE id = ?', (service_id,))
-    provider = cursor.fetchone()
-    provider_id = provider['provider_id'] if provider else None
+    # Make all service requests available to all providers by not pre-assigning
+    provider_id = None
 
     current_date = start_date
     delta_map = {
@@ -845,7 +846,7 @@ def generate_service_requests(cursor, subscription_id, service_id, start_date, e
     max_requests = 50
 
     while current_date <= end_date and count < max_requests:
-        cursor.execute('''INSERT INTO service_requests 
+        cursor.execute('''INSERT INTO service_requests
                          (subscription_id, service_provider_id, scheduled_date, scheduled_time, status)
                          VALUES (?, ?, ?, ?, ?)''',
                        (subscription_id, provider_id, current_date.strftime('%Y-%m-%d'),
@@ -995,8 +996,9 @@ def dashboard_stats():
 @app.route('/api/upcoming-schedules', methods=['GET'])
 # @login_required  # Temporarily disabled for testing
 def get_upcoming_schedules():
-    # user_id = session['user_id']
-    user_id = 1  # Default to user ID 1 for testing
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify([]), 200
     conn = get_db()
     c = conn.cursor()
     c.execute('''SELECT sr.*, srv.name as service_name, srv.category, sub.frequency
@@ -1013,8 +1015,9 @@ def get_upcoming_schedules():
 @app.route('/api/payment-history', methods=['GET'])
 # @login_required  # Temporarily disabled for testing
 def get_payment_history():
-    # user_id = session['user_id']
-    user_id = 1  # Default to user ID 1 for testing
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify([]), 200
     conn = get_db()
     c = conn.cursor()
     c.execute('''SELECT p.*, srv.name as service_name, sub.frequency
@@ -1151,8 +1154,9 @@ def create_service_request():
 @app.route('/api/customer/service-requests', methods=['GET'])
 # @login_required  # Temporarily disabled for testing
 def get_customer_service_requests():
-    # user_id = session['user_id']
-    user_id = 1  # Default to user ID 1 for testing
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify([]), 200
 
     conn = get_db()
     c = conn.cursor()
@@ -1213,28 +1217,37 @@ def mark_notification_read(notification_id):
 
 
 @app.route('/api/provider/customer-requests', methods=['GET'])
-# @login_required  # Temporarily disabled for testing
+@login_required
 def get_customer_requests():
-    # if session.get('user_role') != 'provider':
-    #     return jsonify({'error': 'Only providers can access customer requests'}), 403
+    if session.get('user_role') != 'provider':
+        return jsonify({'error': 'Only providers can access customer requests'}), 403
 
-    # provider_id = session['user_id']
+    provider_id = session['user_id']
     status_filter = request.args.get('status', 'scheduled')
 
     conn = get_db()
     c = conn.cursor()
 
+    # First, get the provider's service categories
+    c.execute(
+        'SELECT DISTINCT category FROM services WHERE provider_id = ?', (provider_id,))
+    provider_categories = [row['category'] for row in c.fetchall()]
+
+    if not provider_categories:
+        # Provider has no services, return empty
+        conn.close()
+        return jsonify([]), 200
+
     query = '''SELECT sr.*, u.name as customer_name, u.contact, u.address as customer_address
                FROM service_requests sr
                JOIN users u ON sr.customer_id = u.id
-               WHERE sr.status = ?'''
+               WHERE sr.status = ? AND sr.service_category IN ({})'''
 
-    params = [status_filter]
+    placeholders = ','.join('?' * len(provider_categories))
+    query = query.format(placeholders)
+    params = [status_filter] + provider_categories
 
-    if status_filter == 'scheduled':
-        # For scheduled requests, show all available ones
-        pass
-    else:
+    if status_filter != 'scheduled':
         # For accepted/in-progress/completed, show only this provider's requests
         query += ' AND sr.service_provider_id = ?'
         params.append(provider_id)
@@ -1251,7 +1264,7 @@ def get_customer_requests():
 # HTML Page Routes
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return redirect('/login')
 
 
 @app.route('/login')

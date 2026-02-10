@@ -65,6 +65,37 @@
         .welcome-text p {
             color: var(--gray-600);
         }
+        .subscriptions-bar {
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-lg);
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: var(--shadow-lg);
+        }
+        .bar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.875rem;
+        }
+        .bar-item svg {
+            width: 20px;
+            height: 20px;
+            opacity: 0.9;
+        }
+        .bar-value {
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+        .bar-label {
+            opacity: 0.9;
+        }
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -356,6 +387,78 @@
             resize: vertical;
             min-height: 80px;
         }
+        .profile-icon {
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--primary-600);
+            border: 2px solid transparent;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+        }
+        .profile-icon::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-400), var(--primary-600), var(--primary-800));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+            animation: pulse 2s infinite;
+        }
+        .profile-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: all 0.4s ease;
+        }
+        .profile-icon:hover {
+            transform: translateY(-3px) scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            border-color: var(--primary-300);
+        }
+        .profile-icon:hover::before {
+            opacity: 1;
+            animation: none;
+        }
+        .profile-icon:hover::after {
+            width: 100%;
+            height: 100%;
+        }
+        .profile-icon:hover {
+            color: white;
+        }
+        .profile-icon:active {
+            transform: translateY(-1px) scale(1.05) rotate(2deg);
+            transition: all 0.1s ease;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(102, 126, 234, 0);
+            }
+        }
         /* Dashboard Layout */
         .dashboard-layout {
             display: flex;
@@ -415,10 +518,10 @@
             flex-shrink: 0;
         }
         .notification-badge {
-            background: var(--error-500);
+            background: linear-gradient(135deg, var(--error-500), var(--error-600));
             color: white;
             font-size: 0.625rem;
-            font-weight: 600;
+            font-weight: 700;
             padding: 0.125rem 0.375rem;
             border-radius: 0.75rem;
             min-width: 1rem;
@@ -427,6 +530,10 @@
             align-items: center;
             justify-content: center;
             margin-left: auto;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
         }
         .dashboard-main {
             flex: 1;
@@ -586,10 +693,43 @@
             <div class="dashboard-header">
                 <div class="container">
                     <div class="header-content">
-                        <div class="welcome-text">
-                            <h1>Welcome back, <span id="userName"></span>! 👋</h1>
-                            <p>Manage your subscriptions and upcoming services</p>
+                    <div class="welcome-text">
+                        <h1>Welcome back, <span id="userName"></span>! 👋</h1>
+                        <p>Manage your subscriptions and upcoming services</p>
+                    </div>
+                    <div class="subscriptions-bar" id="subscriptionsBar" style="display: none;">
+                        <div class="bar-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <div>
+                                <div class="bar-value" id="barActiveSubs">0</div>
+                                <div class="bar-label">Active Subscriptions</div>
+                            </div>
                         </div>
+                        <div class="bar-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <div>
+                                <div class="bar-value" id="barNextService">None</div>
+                                <div class="bar-label">Next Service Date</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="1" x2="12" y2="23"/>
+                                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            </svg>
+                            <div>
+                                <div class="bar-value" id="barTotalSpent">₹0</div>
+                                <div class="bar-label">Total Spent</div>
+                            </div>
+                        </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -834,6 +974,19 @@
                 document.getElementById('totalSubs').textContent = stats.total_subscriptions || 0;
                 document.getElementById('totalSpent').textContent = `₹${stats.total_spent || 0}`;
 
+                // Update subscriptions bar
+                const activeSubs = stats.active_subscriptions || 0;
+                const subscriptionsBar = document.getElementById('subscriptionsBar');
+
+                if (activeSubs > 0) {
+                    document.getElementById('barActiveSubs').textContent = activeSubs;
+                    document.getElementById('barNextService').textContent = stats.next_upcoming_date ? new Date(stats.next_upcoming_date).toLocaleDateString('en-IN') : 'None';
+                    document.getElementById('barTotalSpent').textContent = `₹${stats.total_spent || 0}`;
+                    subscriptionsBar.style.display = 'flex';
+                } else {
+                    subscriptionsBar.style.display = 'none';
+                }
+
                 // Update chart
                 updateChart(stats);
 
@@ -910,6 +1063,15 @@
                                 </svg>
                             </span>
                             <span>${sub.preferred_time.charAt(0).toUpperCase() + sub.preferred_time.slice(1)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </span>
+                            <span>Provider: ${sub.provider_name || 'Not assigned'}</span>
                         </div>
                         <div class="detail-item">
                             <span class="detail-icon">

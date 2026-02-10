@@ -14,39 +14,9 @@
                     <option value="Pest Control">🐛 Pest Control</option>
                     <option value="Car Care">🚗 Car Care</option>
                 </select>
-                <button class="btn-search" onclick="searchServices()" aria-label="Search services">Search</button>
-                <button class="btn-reset" onclick="resetFilters()" aria-label="Reset all filters">Reset</button>
-                <button class="btn-advanced" onclick="toggleAdvancedFilters()" aria-label="Toggle advanced filters">
-                    <span class="filter-icon">⚙️</span>
-                    Filters
-                </button>
+               
             </div>
-            <div class="advanced-filters" id="advancedFilters">
-                <div class="filter-group">
-                    <label class="filter-label">Price Range (₹)</label>
-                    <div class="price-range">
-                        <input type="number" class="price-input" id="minPrice" placeholder="Min" aria-label="Minimum price">
-                        <span>to</span>
-                        <input type="number" class="price-input" id="maxPrice" placeholder="Max" aria-label="Maximum price">
-                    </div>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Minimum Rating</label>
-                    <div class="rating-filter">
-                        <label class="rating-checkbox">
-                            <input type="radio" name="rating" value="4" aria-label="4 stars and above"> 4★+
-                        </label>
-                        <label class="rating-checkbox">
-                            <input type="radio" name="rating" value="3" aria-label="3 stars and above"> 3★+
-                        </label>
-                        <label class="rating-checkbox">
-                            <input type="radio" name="rating" value="0" checked aria-label="All ratings"> All
-                        </label>
-                    </div>
-                </div>
-                <div class="filter-group">
-                    <button class="btn-set" onclick="applyFilters()" aria-label="Apply filters">Set</button>
-                </div>
+            
             </div>
         </div>
     </div>

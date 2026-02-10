@@ -154,6 +154,29 @@ const API = {
         return await this.fetch(`/accept-job/${jobId}`, {
             method: 'POST'
         });
+    },
+
+    // Profile update
+    async updateProfile(profileData) {
+        return await this.fetch('/profile', {
+            method: 'PUT',
+            body: JSON.stringify(profileData)
+        });
+    },
+
+    // Upcoming schedules
+    async getUpcomingSchedules() {
+        return await this.fetch('/upcoming-schedules');
+    },
+
+    // Payment history
+    async getPaymentHistory() {
+        return await this.fetch('/payment-history');
+    },
+
+    // Categories
+    async getCategories() {
+        return await this.fetch('/categories');
     }
 };
 
